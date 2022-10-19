@@ -1,0 +1,3 @@
+[submodule "include/digitalis-framework"] 
+  path = include/digitalis-framework 
+  url = https://github.com/perrelet/digitalis-framework
