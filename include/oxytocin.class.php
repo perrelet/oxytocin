@@ -31,6 +31,12 @@ class Oxytocin extends \Digitalis\Singleton {
         include OXYTOCIN_PATH . 'include/admin/updater.php';
         $updater = new Updater();
 
+        add_action('admin_enqueue_scripts', function () {
+
+            wp_enqueue_style('oxytocin-admin', OXYTOCIN_URI . 'assets/css/oxytocin.admin.css', [], OXYTOCIN_VERSION);
+
+        });
+
     }
 
     
