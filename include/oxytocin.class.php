@@ -24,8 +24,6 @@ class Oxytocin extends \Digitalis\Singleton {
 
         $this->load_integrations(OXYTOCIN_PATH . 'include/integrations');
 
-        $this->instantiate();
-
     }
 
     protected function load_admin () {
