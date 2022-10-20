@@ -5,6 +5,7 @@ namespace Oxytocin;
 class Oxygen extends \Digitalis\Integration {
 
 	protected $templates;
+	protected $desc_key = 'oxytocin_notes';
 
     public function condition () {
 
@@ -26,13 +27,17 @@ class Oxygen extends \Digitalis\Integration {
 				
 				add_filter('manage_ct_template_posts_columns', [$this, 'ct_custom_views_columns'], 100);
 				add_action('manage_ct_template_posts_custom_column' , [$this, 'ct_custom_view_column'], 100, 2 );
-				add_action('add_meta_boxes', [$this, 'add_meta_box']);
+				add_action('add_meta_boxes', [$this, 'add_notes_meta_box']);
 				add_action('save_post_ct_template', [$this, 'save_template'], 1, 3);
 				
-				// Pages
+				// Pages Table
 				
 				add_filter('manage_pages_columns', [$this, 'manage_pages_columns']);
 				add_action('manage_pages_custom_column', [$this, 'pages_custom_column'], 10, 2);
+
+				// Page
+
+				add_action('add_meta_boxes', [$this, 'dependency_meta_box']);
 			
 			}
 		
@@ -237,12 +242,77 @@ class Oxygen extends \Digitalis\Integration {
 		
 	}
 
-    public function add_meta_box () {
+	public function dependency_meta_box () {
+
+		if (!oxygen_vsb_current_user_can_full_access()) return;
+
+		$screen = get_current_screen();
+		if (get_option('oxygen_vsb_ignore_post_type_'.$screen->post_type, false) == "true") return;
+
+		$post_types 	= get_post_types('', 'objects'); 
+		$exclude_types 	= ["nav_menu_item", "revision"];
+
+		foreach ($post_types as $post_type) {
+
+			if (in_array($post_type->name, $exclude_types)) continue;
+
+			global $wp_version;
+			$num_version = 9999;
+
+			if (is_numeric($wp_version)) {
+
+				$num_version = floatval($wp_version);
+
+			} else {
+
+				if(strpos($wp_version, '-')) {
+					
+					$exploded = explode('-', $wp_version);
+					$num_version = $exploded[0];
+					
+				} else {
+					$num_version = $wp_version;
+				}
+
+				$exploded = explode('.', $num_version);
+
+				if (is_numeric($exploded[0])) {
+					$num_version = floatval($exploded[0] . (isset($exploded[1]) ? '.' . $exploded[1] : ''));
+				} else {
+					$num_version = 9999;
+				}
+
+			}
+
+			add_meta_box(
+				'oxytocin_dependencies',
+				__('Oxytocin', 'digitalis'),
+				[$this, 'render_dependency_meta_box'],
+				$post_type->name,
+				($num_version >= 5 ? 'normal' : 'advanced'),
+				'high'
+			);
+
+		}
+
+	}
+
+	public function render_dependency_meta_box () {
+
+		global $post;
+
+		$reusable = $this->get_reusable_parts($post->ID);
+
+		//dprint($reusable);
+
+	}
+
+    public function add_notes_meta_box () {
 	
 		add_meta_box(
 			'ct_template_digitalis_info',
 			'Info',
-			[$this, 'render_meta_box'],
+			[$this, 'render_notes_meta_box'],
 			'ct_template',
 			'side',
 			'default'
@@ -250,7 +320,7 @@ class Oxygen extends \Digitalis\Integration {
 		
 	}
 
-    public function render_meta_box () {
+    public function render_notes_meta_box () {
 		
 		global $post;
 
@@ -329,6 +399,31 @@ class Oxygen extends \Digitalis\Integration {
 		
 		return null;
 		
+	}
+
+	protected function get_reusable_parts ($post_id) {
+
+		if (!$json = get_post_meta($post_id, 'ct_builder_json', true)) return [];
+
+		$tree = json_decode($json, true);
+		return $this->find_reusable_parts($tree);
+
+	}
+
+	protected function find_reusable_parts ($elements, $reusable = []) {
+
+		if (!$elements || !isset($elements['children'])) return $reusable;
+
+		foreach ($elements['children'] as $element) {
+
+			if ($element['name'] == 'ct_reusable') $reusable[] = $element;
+
+			if (isset($element['children'])) $reusable = $this->find_reusable_parts($element, $reusable);
+
+		}
+
+		return $reusable;
+
 	}
 
     protected function get_templates () {
