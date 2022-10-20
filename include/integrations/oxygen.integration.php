@@ -4,6 +4,8 @@ namespace Oxytocin;
 
 class Oxygen extends \Digitalis\Integration {
 
+	protected $templates;
+
     public function condition () {
 
         return defined("CT_VERSION");
