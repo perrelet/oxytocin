@@ -66,28 +66,15 @@ class Oxygen extends \Digitalis\Integration {
 	public function admin_bar_menu () {
 
 		global $wp_admin_bar, $post;
+		$post_type = get_post_type_object(get_post_type($post));
 
 		if (!$wp_admin_bar->get_node('oxygen_admin_bar_menu')) return;
 
 		$wp_admin_bar->add_menu( [
-			'id' => 'oxytocin_oxy_div',
+			'id' => 'oxytocin_oxy_div_1',
 			'parent' => 'oxygen_admin_bar_menu',
 			'title' => '---',
 			'href' => false,
-		]);
-
-		$wp_admin_bar->add_menu( [
-			'id' => 'oxytocin_templates',
-			'parent' => 'oxygen_admin_bar_menu',
-			'title' => 'Templates',
-			'href' => admin_url('edit.php?s&post_type=ct_template&ct_template_type=template'),
-		]);
-
-		$wp_admin_bar->add_menu( [
-			'id' => 'oxytocin_reusable',
-			'parent' => 'oxygen_admin_bar_menu',
-			'title' => 'Reusable Parts',
-			'href' => admin_url('edit.php?s&post_type=ct_template&ct_template_type=reusable_part'),
 		]);
 
 		$templates = $this->get_recent_templates();
@@ -117,40 +104,104 @@ class Oxygen extends \Digitalis\Integration {
 		}
 
 		$template_id = $this->get_template_id($post->ID);
+		$reusable = $this->get_reusable_parts($post->ID);
 
 		if ($template_id) {
 
 			$wp_admin_bar->add_menu( [
 				'id' => 'oxytocin_inherited_templates',
 				'parent' => 'oxygen_admin_bar_menu',
-				'title' => 'Inheritance',
+				'title' => 'Template Inheritance',
 				'href' => false,
 			]);		
 
 			$inheritance = $this->get_inheritance($template_id);
 			$inheritance = array_reverse($inheritance);
+			$space = "&nbsp;&nbsp;";
+			$indent = "";
 
 			if ($inheritance) foreach ($inheritance as $i => $template) {
+
+				$n = $i + 1;
 
 				$wp_admin_bar->add_menu( [
 					'id' => 'oxytocin_inherited_template-' . $template->id,
 					'parent' => 'oxytocin_inherited_templates',
-					'title' => 'Level ' . ($i + 1) . ': ' . $template->post_title . ' (Template)',
+					'title' => "{$indent}&rdca; {$n}. {$template->post_title} (Template)",
 					'href' => get_edit_post_link($template->id),
 				]);
 
+				$indent .= $space;
+
 			}
+
+			$n++;
 
 			$wp_admin_bar->add_menu( [
 				'id' => 'oxytocin_inherited_template-this',
 				'parent' => 'oxytocin_inherited_templates',
-				'title' => 'Level ' . ($i + 2) . ': ' . $post->post_title,
+				'title' => "{$indent}&rdca; {$n}. {$post->post_title} ({$post_type->labels->singular_name})",
 				'href' => get_edit_post_link($post->ID),
-			]);	
+			]);
+
+			$indent .= $space;
+			$n++;
+
+			if ($reusable) foreach ($reusable as $j => $part) {
+
+				$wp_admin_bar->add_menu( [
+					'id' => 'oxytocin_inherited_template_part-' . $j,
+					'parent' => 'oxytocin_inherited_templates',
+					'title' => "{$indent}&rdca; {$n}. " . get_the_title($part['options']['view_id']) . " (Part)",
+					'href' => get_edit_post_link($part['options']['view_id']),
+				]);	
+
+			}
 
 		}
 
+		if ($reusable) {
 
+			$wp_admin_bar->add_menu( [
+				'id' => 'oxytocin_reusable_parts',
+				'parent' => 'oxygen_admin_bar_menu',
+				'title' => 'Child Reusable Parts',
+				'href' => false,
+			]);	
+
+			foreach ($reusable as $i => $part) {
+
+				$wp_admin_bar->add_menu( [
+					'id' => 'oxytocin_reusable_part-' . $i,
+					'parent' => 'oxytocin_reusable_parts',
+					'title' => get_the_title($part['options']['view_id']),
+					'href' => get_edit_post_link($part['options']['view_id']),
+				]);
+
+			}
+
+		}
+
+		$wp_admin_bar->add_menu( [
+			'id' => 'oxytocin_oxy_div_2',
+			'parent' => 'oxygen_admin_bar_menu',
+			'title' => '---',
+			'href' => false,
+		]);
+
+		$wp_admin_bar->add_menu( [
+			'id' => 'oxytocin_templates',
+			'parent' => 'oxygen_admin_bar_menu',
+			'title' => 'All Templates',
+			'href' => admin_url('edit.php?s&post_type=ct_template&ct_template_type=template'),
+		]);
+
+		$wp_admin_bar->add_menu( [
+			'id' => 'oxytocin_reusable',
+			'parent' => 'oxygen_admin_bar_menu',
+			'title' => 'All Reusable Parts',
+			'href' => admin_url('edit.php?s&post_type=ct_template&ct_template_type=reusable_part'),
+		]);
 
 	}
 
