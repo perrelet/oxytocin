@@ -410,7 +410,7 @@ class Oxygen extends \Digitalis\Integration {
 		$template_id = get_post_meta($post_id, 'ct_other_template', true );
 
 		if (empty($template_id)) {
-			$page_template = ct_get_posts_template($post_id);
+			if (!$page_template = ct_get_posts_template($post_id)) return null;
 			$template_id = $page_template->ID;
 		}
 
