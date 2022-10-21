@@ -428,13 +428,16 @@ class Oxygen extends \Digitalis\Integration {
 	protected function get_inheritance ($post_id, $parts = false) {
 
 		if (get_post_type($post_id) == 'ct_template') {
+
 			$template_id = $post_id;
+
 		} else {
+
 			$template_id = $this->get_template_id($post_id);
+
 		}
 		
 		return $this->get_template_inheritance($template_id, $parts);
-		
 
 	}
 
@@ -445,10 +448,14 @@ class Oxygen extends \Digitalis\Integration {
 		if ($parent && $parts !== false) $parent->parts = $this->get_reusable_parts($parent->ID, true);
 
 		if (is_null($parent)) {
+
 			return $inheritance;
+
 		} else {
+
 			$inheritance[] = $parent;
 			$inheritance = $this->get_template_inheritance($parent->ID, $parts, $inheritance);
+
 		}
 		
 		return $inheritance;
@@ -472,13 +479,9 @@ class Oxygen extends \Digitalis\Integration {
 		$tree = json_decode($json, true);
 		$parts = $this->find_reusable_parts($tree);
 
-		if ($recursive) {
+		if ($recursive && $parts) foreach ($parts as $part) {
 
-			if ($parts) foreach ($parts as $id => $part) {
-
-				$part->parts = $this->get_reusable_parts($part->ID, true);
-	
-			}
+			$part->parts = $this->get_reusable_parts($part->ID, true);
 
 		}
 
