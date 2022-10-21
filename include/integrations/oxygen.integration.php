@@ -152,8 +152,8 @@ class Oxygen extends \Digitalis\Integration {
 				$wp_admin_bar->add_menu( [
 					'id' => 'oxytocin_inherited_template_part-' . $j,
 					'parent' => 'oxytocin_inherited_templates',
-					'title' => "{$indent}&rdca; {$n}. " . get_the_title($part['options']['view_id']) . " (Part)",
-					'href' => get_edit_post_link($part['options']['view_id']),
+					'title' => "{$indent}&rdca; {$n}. {$part->post_title} (Part)",
+					'href' => get_edit_post_link($part->ID),
 				]);	
 
 			}
@@ -174,8 +174,8 @@ class Oxygen extends \Digitalis\Integration {
 				$wp_admin_bar->add_menu( [
 					'id' => 'oxytocin_reusable_part-' . $i,
 					'parent' => 'oxytocin_reusable_parts',
-					'title' => get_the_title($part['options']['view_id']),
-					'href' => get_edit_post_link($part['options']['view_id']),
+					'title' => $part->post_title,
+					'href' => get_edit_post_link($part->ID),
 				]);
 
 			}
@@ -351,12 +351,16 @@ class Oxygen extends \Digitalis\Integration {
 
 		global $post;
 
-		$inheritance = $this->get_inheritance($post->ID);
+		$inheritance = $this->get_inheritance($post->ID, true);
 		$reusable = $this->get_reusable_parts($post->ID);
 		
 		echo "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>";
 
 		dprint($inheritance);
+		dprint("-----------------");
+		dprint("-----------------");
+		dprint("-----------------");
+		dprint("-----------------");
 		dprint($reusable);
 
 	}
@@ -421,7 +425,7 @@ class Oxygen extends \Digitalis\Integration {
 
 	}
 
-	protected function get_inheritance ($post_id) {
+	protected function get_inheritance ($post_id, $parts = false) {
 
 		if (get_post_type($post_id) == 'ct_template') {
 			$template_id = $post_id;
@@ -429,20 +433,22 @@ class Oxygen extends \Digitalis\Integration {
 			$template_id = $this->get_template_id($post_id);
 		}
 		
-		return $this->get_template_inheritance($template_id);
+		return $this->get_template_inheritance($template_id, $parts);
 		
 
 	}
 
-    protected function get_template_inheritance ($template_id, $inheritance = []) {
+    protected function get_template_inheritance ($template_id, $parts = false, $inheritance = []) {
 		
 		$parent = $this->get_parent_template($template_id);
 		
+		if ($parent && $parts !== false) $parent->parts = $this->get_reusable_parts($parent->ID, true);
+
 		if (is_null($parent)) {
 			return $inheritance;
 		} else {
 			$inheritance[] = $parent;
-			$inheritance = $this->get_template_inheritance($parent->ID, $inheritance);
+			$inheritance = $this->get_template_inheritance($parent->ID, $parts, $inheritance);
 		}
 		
 		return $inheritance;
@@ -470,7 +476,7 @@ class Oxygen extends \Digitalis\Integration {
 
 			if ($parts) foreach ($parts as $id => $part) {
 
-				$parts[$id]['parts'] = $this->get_reusable_parts($part['options']['view_id'], true);
+				$part->parts = $this->get_reusable_parts($part->ID, true);
 	
 			}
 
@@ -486,7 +492,14 @@ class Oxygen extends \Digitalis\Integration {
 
 		foreach ($elements['children'] as $element) {
 
-			if ($element['name'] == 'ct_reusable') $reusable[] = $element;
+			if ($element['name'] == 'ct_reusable') {
+				
+				//$reusable[] = $element;
+				$part = get_post($element['options']['view_id']);
+				$part->nicename = $element['options']['nicename'];
+				$reusable[] = $part;
+
+			}
 
 			if (isset($element['children'])) $reusable = $this->find_reusable_parts($element, $reusable);
 
