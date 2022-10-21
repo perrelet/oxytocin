@@ -93,10 +93,10 @@ class Oxygen extends \Digitalis\Integration {
 				// We cant link directly to the builder as oxygen would require us to check each posts shortcodes for a ct_inner_content block. 
 	
 				$wp_admin_bar->add_menu( [
-					'id' => 'oxytocin_recent_template-' . $template->id,
+					'id' => 'oxytocin_recent_template-' . $template->ID,
 					'parent' => 'oxytocin_recent_templates',
 					'title' => $template->post_title,
-					'href' => get_edit_post_link($template->id),
+					'href' => get_edit_post_link($template->ID),
 				]);
 	
 			}
@@ -125,10 +125,10 @@ class Oxygen extends \Digitalis\Integration {
 				$n = $i + 1;
 
 				$wp_admin_bar->add_menu( [
-					'id' => 'oxytocin_inherited_template-' . $template->id,
+					'id' => 'oxytocin_inherited_template-' . $template->ID,
 					'parent' => 'oxytocin_inherited_templates',
 					'title' => "{$indent}&rdca; {$n}. {$template->post_title} (Template)",
-					'href' => get_edit_post_link($template->id),
+					'href' => get_edit_post_link($template->ID),
 				]);
 
 				$indent .= $space;
@@ -231,13 +231,13 @@ class Oxygen extends \Digitalis\Integration {
 				
 				$inheritance = $this->get_inheritance($post_id);
 				
-				//if (!is_null($template)) echo "<a href='" . get_edit_post_link($template->id) . "'>{$template->post_title}</a>";
+				//if (!is_null($template)) echo "<a href='" . get_edit_post_link($template->ID) . "'>{$template->post_title}</a>";
 
 				if ($inheritance) foreach ($inheritance as $i => $template) {
 						
 					if ($i > 0) echo " ";
 					echo "&lArr; ";
-					echo "<a href='" . get_edit_post_link($template->id) . "'>{$template->post_title}</a>";
+					echo "<a href='" . get_edit_post_link($template->ID) . "'>{$template->post_title}</a>";
 					
 				}
 
@@ -275,14 +275,13 @@ class Oxygen extends \Digitalis\Integration {
 			
 			case 'digitalis_template':
 				
-				$template_id = $this->get_template_id($post_id);
-				$inheritance = $this->get_inheritance($template_id);
+				$inheritance = $this->get_inheritance($post_id);
 				
-				echo "<a href='" . get_edit_post_link($template_id) . "'>" . get_the_title($template_id) . "</a>";
+				echo "<a href='" . get_edit_post_link($post_id) . "'>" . get_the_title($post_id) . "</a>";
 				
 				if ($inheritance) foreach ($inheritance as $i => $template) {
 						
-					echo " &lArr; <a href='" . get_edit_post_link($template->id) . "'>{$template->post_title}</a>";
+					echo " &lArr; <a href='" . get_edit_post_link($template->ID) . "'>{$template->post_title}</a>";
 				
 				}
 				
@@ -352,9 +351,13 @@ class Oxygen extends \Digitalis\Integration {
 
 		global $post;
 
+		$inheritance = $this->get_inheritance($post->ID);
 		$reusable = $this->get_reusable_parts($post->ID);
+		
+		echo "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>";
 
-		//dprint($reusable);
+		dprint($inheritance);
+		dprint($reusable);
 
 	}
 
@@ -418,15 +421,28 @@ class Oxygen extends \Digitalis\Integration {
 
 	}
 
-    protected function get_inheritance ($post_id, $inheritance = []) {
+	protected function get_inheritance ($post_id) {
+
+		if (get_post_type($post_id) == 'ct_template') {
+			$template_id = $post_id;
+		} else {
+			$template_id = $this->get_template_id($post_id);
+		}
 		
-		$parent = $this->get_parent_template($post_id);
+		return $this->get_template_inheritance($template_id);
+		
+
+	}
+
+    protected function get_template_inheritance ($template_id, $inheritance = []) {
+		
+		$parent = $this->get_parent_template($template_id);
 		
 		if (is_null($parent)) {
 			return $inheritance;
 		} else {
 			$inheritance[] = $parent;
-			$inheritance = $this->get_inheritance($parent->id, $inheritance);
+			$inheritance = $this->get_template_inheritance($parent->ID, $inheritance);
 		}
 		
 		return $inheritance;
@@ -436,28 +452,31 @@ class Oxygen extends \Digitalis\Integration {
     protected function get_parent_template ($post_id) {
 		
 		$template_type = get_post_meta($post_id, 'ct_template_type', true);
-		
 		if ($template_type == 'reusable_part') return null;
 		
 		$parent_id = get_post_meta($post_id, 'ct_parent_template', true);
-		$templates = $this->get_templates();
-		
-		foreach ($templates as $template) {
-			
-			if ($template->id == $parent_id) return $template;
-			
-		}
-		
-		return null;
+		return $parent_id ? get_post($parent_id) : null;
 		
 	}
 
-	protected function get_reusable_parts ($post_id) {
+	protected function get_reusable_parts ($post_id, $recursive = true) {
 
 		if (!$json = get_post_meta($post_id, 'ct_builder_json', true)) return [];
 
 		$tree = json_decode($json, true);
-		return $this->find_reusable_parts($tree);
+		$parts = $this->find_reusable_parts($tree);
+
+		if ($recursive) {
+
+			if ($parts) foreach ($parts as $id => $part) {
+
+				$parts[$id]['parts'] = $this->get_reusable_parts($part['options']['view_id'], true);
+	
+			}
+
+		}
+
+		return $parts;
 
 	}
 
