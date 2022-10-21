@@ -2,10 +2,16 @@
 
 namespace Oxytocin;
 
+use Generator;
+
 class Oxygen extends \Digitalis\Integration {
 
 	protected $templates;
 	protected $desc_key = 'oxytocin_notes';
+
+	const INDENT = 	"&nbsp;&nbsp;&nbsp;&nbsp;";
+	const NEST = 	"&rdca;";
+	const CURRENT = "&#9733;";
 
     public function condition () {
 
@@ -103,64 +109,20 @@ class Oxygen extends \Digitalis\Integration {
 
 		}
 
-		$template_id = Genealogist::get_template_id($post->ID);
-		$reusable = Genealogist::get_reusable_parts($post->ID);
-
-		if ($template_id) {
+		if ($tree = Genealogist::get_tree($post->ID)) {
 
 			$wp_admin_bar->add_menu( [
-				'id' => 'oxytocin_inherited_templates',
+				'id' => 'oxytocin_tree',
 				'parent' => 'oxygen_admin_bar_menu',
 				'title' => 'Template Inheritance',
 				'href' => false,
-			]);		
-
-			$inheritance = Genealogist::get_inheritance($template_id);
-			$inheritance = array_reverse($inheritance);
-			$space = "&nbsp;&nbsp;";
-			$indent = "";
-
-			if ($inheritance) foreach ($inheritance as $i => $template) {
-
-				$n = $i + 1;
-
-				$wp_admin_bar->add_menu( [
-					'id' => 'oxytocin_inherited_template-' . $template->ID,
-					'parent' => 'oxytocin_inherited_templates',
-					'title' => "{$indent}&rdca; {$n}. {$template->post_title} (Template)",
-					'href' => get_edit_post_link($template->ID),
-				]);
-
-				$indent .= $space;
-
-			}
-
-			$n++;
-
-			$wp_admin_bar->add_menu( [
-				'id' => 'oxytocin_inherited_template-this',
-				'parent' => 'oxytocin_inherited_templates',
-				'title' => "{$indent}&rdca; {$n}. {$post->post_title} ({$post_type->labels->singular_name})",
-				'href' => get_edit_post_link($post->ID),
 			]);
 
-			$indent .= $space;
-			$n++;
-
-			if ($reusable) foreach ($reusable as $j => $part) {
-
-				$wp_admin_bar->add_menu( [
-					'id' => 'oxytocin_inherited_template_part-' . $j,
-					'parent' => 'oxytocin_inherited_templates',
-					'title' => "{$indent}&rdca; {$n}. {$part->post_title} (Part)",
-					'href' => get_edit_post_link($part->ID),
-				]);	
-
-			}
+			$this->admin_menu_tree($tree);
 
 		}
 
-		if ($reusable) {
+		if ($reusable = Genealogist::get_reusable_parts($post->ID)) {
 
 			$wp_admin_bar->add_menu( [
 				'id' => 'oxytocin_reusable_parts',
@@ -205,6 +167,39 @@ class Oxygen extends \Digitalis\Integration {
 
 	}
 
+	public function admin_menu_tree ($tree, $parent_id = 'oxytocin_tree', $depth = 1, $indent = "") {
+
+		global $wp_admin_bar;
+
+		if (property_exists($tree, 'children') && $tree->children) foreach ($tree->children as $i => $post) {
+
+			if (property_exists($post, 'type')) {
+
+				if ($post->type == 'template') $type = 'Template';
+				if ($post->type == 'reusable') $type = 'Part';
+				$symbol = self::NEST;
+
+			} else {
+
+				$post_type = get_post_type_object($post->post_type);
+				$type = $post_type->labels->singular_name;
+				$symbol = self::CURRENT;
+
+			}
+
+			$wp_admin_bar->add_menu( [
+				'id' => "{$parent_id}_{$depth}_$i",
+				'parent' => $parent_id,
+				'title' => "{$indent}{$symbol} {$depth}. {$post->post_title} ({$type})",
+				'href' => get_edit_post_link($post->ID),
+			]);
+
+			$this->admin_menu_tree($post, $parent_id, $depth + 1, $indent . self::INDENT);
+
+		}
+
+	}
+
     public function ct_custom_views_columns ($columns) {
 		
 		$offset = 2;
@@ -227,12 +222,9 @@ class Oxygen extends \Digitalis\Integration {
 		switch ($column) {
 			
 			case 'digitalis_inherits':
-				//echo $this->get_templates()[get_post_meta($post_id, 'ct_parent_template', true)];
-				
+
 				$inheritance = Genealogist::get_inheritance($post_id);
 				
-				//if (!is_null($template)) echo "<a href='" . get_edit_post_link($template->ID) . "'>{$template->post_title}</a>";
-
 				if ($inheritance) foreach ($inheritance as $i => $template) {
 						
 					if ($i > 0) echo " ";
@@ -351,11 +343,13 @@ class Oxygen extends \Digitalis\Integration {
 
 		global $post;
 
+		$tree = Genealogist::get_tree($post->ID);
 		$inheritance = Genealogist::get_inheritance($post->ID, true);
 		$reusable = Genealogist::get_reusable_parts($post->ID);
 		
 		echo "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>";
 
+		dprint($tree);
 		dprint($inheritance);
 		dprint("-----------------");
 		dprint("-----------------");
@@ -416,7 +410,7 @@ class Oxygen extends \Digitalis\Integration {
 	//
 	//
 
-    protected function get_templates () {
+    /* protected function get_templates () {
 		
 		if (is_null($this->templates)) {
 
@@ -433,7 +427,7 @@ class Oxygen extends \Digitalis\Integration {
 		
 		return $this->templates;
 
-	}
+	} */
 
 	protected function get_recent_templates ($n = 5) {
 		

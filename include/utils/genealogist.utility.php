@@ -4,9 +4,43 @@ namespace Oxytocin;
 
 class Genealogist extends Utility {
 
+	public static $inheritance;
+
     public static function get_tree ($post_id) {
 
-		
+		self::$inheritance = self::get_inheritance($post_id, true);
+
+		if (self::$inheritance) {
+
+			$post = get_post($post_id);
+
+			if ($post->post_type == 'ct_template') {
+
+				self::$inheritance[0]->children = self::get_reusable_parts($post_id);
+
+			} else {
+
+				self::$inheritance[0]->children = [$post];
+				self::$inheritance[0]->children[0]->children = self::get_reusable_parts($post_id);
+
+			}
+
+		}
+
+		$template = null;
+		$prev_template = null;
+
+		if (self::$inheritance) foreach (self::$inheritance as $i => $template) {
+
+			if ($prev_template) $template->children = $prev_template;
+			$prev_template = [$template];
+
+		}
+
+		$tree = new \stdClass();
+		$tree->children = [$template];
+
+		return $tree;
 
 	}
 
@@ -28,8 +62,11 @@ class Genealogist extends Utility {
 		$template_type = get_post_meta($post_id, 'ct_template_type', true);
 		if ($template_type == 'reusable_part') return null;
 		
-		$parent_id = get_post_meta($post_id, 'ct_parent_template', true);
-		return $parent_id ? get_post($parent_id) : null;
+		if (!$parent_id = get_post_meta($post_id, 'ct_parent_template', true)) return null;
+		
+		$template = get_post($parent_id);
+		$template->type = 'template';
+		return $template;
 		
 	}
 
@@ -53,7 +90,7 @@ class Genealogist extends Utility {
 		
 		$parent = self::get_parent_template($template_id);
 		
-		if ($parent && $parts !== false) $parent->parts = self::get_reusable_parts($parent->ID, true);
+		if ($parent && $parts !== false) $parent->children = self::get_reusable_parts($parent->ID, true);
 
 		if (is_null($parent)) {
 
@@ -79,7 +116,7 @@ class Genealogist extends Utility {
 
 		if ($recursive && $parts) foreach ($parts as $part) {
 
-			$part->parts = self::get_reusable_parts($part->ID, true);
+			$part->children = self::get_reusable_parts($part->ID, true);
 
 		}
 
@@ -98,6 +135,7 @@ class Genealogist extends Utility {
 				//$reusable[] = $element;
 				$part = get_post($element['options']['view_id']);
 				$part->nicename = $element['options']['nicename'];
+				$part->type = 'reusable';
 				$reusable[] = $part;
 
 			}
