@@ -103,8 +103,8 @@ class Oxygen extends \Digitalis\Integration {
 
 		}
 
-		$template_id = $this->get_template_id($post->ID);
-		$reusable = $this->get_reusable_parts($post->ID);
+		$template_id = Genealogist::get_template_id($post->ID);
+		$reusable = Genealogist::get_reusable_parts($post->ID);
 
 		if ($template_id) {
 
@@ -115,7 +115,7 @@ class Oxygen extends \Digitalis\Integration {
 				'href' => false,
 			]);		
 
-			$inheritance = $this->get_inheritance($template_id);
+			$inheritance = Genealogist::get_inheritance($template_id);
 			$inheritance = array_reverse($inheritance);
 			$space = "&nbsp;&nbsp;";
 			$indent = "";
@@ -229,7 +229,7 @@ class Oxygen extends \Digitalis\Integration {
 			case 'digitalis_inherits':
 				//echo $this->get_templates()[get_post_meta($post_id, 'ct_parent_template', true)];
 				
-				$inheritance = $this->get_inheritance($post_id);
+				$inheritance = Genealogist::get_inheritance($post_id);
 				
 				//if (!is_null($template)) echo "<a href='" . get_edit_post_link($template->ID) . "'>{$template->post_title}</a>";
 
@@ -275,7 +275,7 @@ class Oxygen extends \Digitalis\Integration {
 			
 			case 'digitalis_template':
 				
-				$inheritance = $this->get_inheritance($post_id);
+				$inheritance = Genealogist::get_inheritance($post_id);
 				
 				echo "<a href='" . get_edit_post_link($post_id) . "'>" . get_the_title($post_id) . "</a>";
 				
@@ -351,8 +351,8 @@ class Oxygen extends \Digitalis\Integration {
 
 		global $post;
 
-		$inheritance = $this->get_inheritance($post->ID, true);
-		$reusable = $this->get_reusable_parts($post->ID);
+		$inheritance = Genealogist::get_inheritance($post->ID, true);
+		$reusable = Genealogist::get_reusable_parts($post->ID);
 		
 		echo "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>";
 
@@ -412,105 +412,9 @@ class Oxygen extends \Digitalis\Integration {
 
 	}
 
-	protected function get_template_id ($post_id) {
-
-		$template_id = get_post_meta($post_id, 'ct_other_template', true );
-
-		if (empty($template_id)) {
-			if (!$page_template = ct_get_posts_template($post_id)) return null;
-			$template_id = $page_template->ID;
-		}
-
-		return $template_id;
-
-	}
-
-	protected function get_inheritance ($post_id, $parts = false) {
-
-		if (get_post_type($post_id) == 'ct_template') {
-
-			$template_id = $post_id;
-
-		} else {
-
-			$template_id = $this->get_template_id($post_id);
-
-		}
-		
-		return $this->get_template_inheritance($template_id, $parts);
-
-	}
-
-    protected function get_template_inheritance ($template_id, $parts = false, $inheritance = []) {
-		
-		$parent = $this->get_parent_template($template_id);
-		
-		if ($parent && $parts !== false) $parent->parts = $this->get_reusable_parts($parent->ID, true);
-
-		if (is_null($parent)) {
-
-			return $inheritance;
-
-		} else {
-
-			$inheritance[] = $parent;
-			$inheritance = $this->get_template_inheritance($parent->ID, $parts, $inheritance);
-
-		}
-		
-		return $inheritance;
-		
-	}
-
-    protected function get_parent_template ($post_id) {
-		
-		$template_type = get_post_meta($post_id, 'ct_template_type', true);
-		if ($template_type == 'reusable_part') return null;
-		
-		$parent_id = get_post_meta($post_id, 'ct_parent_template', true);
-		return $parent_id ? get_post($parent_id) : null;
-		
-	}
-
-	protected function get_reusable_parts ($post_id, $recursive = true) {
-
-		if (!$json = get_post_meta($post_id, 'ct_builder_json', true)) return [];
-
-		$tree = json_decode($json, true);
-		$parts = $this->find_reusable_parts($tree);
-
-		if ($recursive && $parts) foreach ($parts as $part) {
-
-			$part->parts = $this->get_reusable_parts($part->ID, true);
-
-		}
-
-		return $parts;
-
-	}
-
-	protected function find_reusable_parts ($elements, $reusable = []) {
-
-		if (!$elements || !isset($elements['children'])) return $reusable;
-
-		foreach ($elements['children'] as $element) {
-
-			if ($element['name'] == 'ct_reusable') {
-				
-				//$reusable[] = $element;
-				$part = get_post($element['options']['view_id']);
-				$part->nicename = $element['options']['nicename'];
-				$reusable[] = $part;
-
-			}
-
-			if (isset($element['children'])) $reusable = $this->find_reusable_parts($element, $reusable);
-
-		}
-
-		return $reusable;
-
-	}
+	//
+	//
+	//
 
     protected function get_templates () {
 		
@@ -532,17 +436,14 @@ class Oxygen extends \Digitalis\Integration {
 	}
 
 	protected function get_recent_templates ($n = 5) {
-
-		global $wpdb;
-
-		return $wpdb->get_results(
-			"SELECT id, post_title
-			FROM $wpdb->posts as post
-			WHERE post_type = 'ct_template'
-			AND post.post_status IN ('publish')
-			ORDER BY post_modified DESC
-			LIMIT {$n}"
-		);
+		
+		return (new \WP_Query([
+			'posts_per_page'	=> $n,
+			'orderby'			=> 'date',
+			'order'				=> 'DESC',
+			'post_status'		=> 'publish',
+			'post_type'			=> 'ct_template',
+		]))->get_posts();
 
 	}
 
