@@ -22,6 +22,9 @@ class Oxytocin extends \Digitalis\Singleton {
 
     protected function load () {
 
+        include OXYTOCIN_PATH . 'include/tools/tool.abstract.php';
+        include OXYTOCIN_PATH . 'include/tools/genealogist.tool.php';
+
         $this->load_integrations(OXYTOCIN_PATH . 'include/integrations');
 
     }
