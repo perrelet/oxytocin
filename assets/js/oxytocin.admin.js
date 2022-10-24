@@ -1,11 +1,12 @@
 
-// Change default options for ALL charts
+/* // Change default options for ALL charts
 Chart.defaults.set('plugins.datalabels', {
     color: '#FE777B'
   });
+ */
+  
 
 function new_chart (nodes, id, type, orientation) {
-
     new Chart(document.getElementById(id).getContext("2d"), {
         plugins: [ChartDataLabels],
         type,
@@ -13,15 +14,17 @@ function new_chart (nodes, id, type, orientation) {
             labels: nodes.map((d) => d.name),
             datasets: [{
                 pointBackgroundColor: nodes.map((d) => d.color),
-                edgeLineBorderColor: '#DDDDDD',
+                edgeLineBorderColor: '#e8e8e8',
+                edgeLineBorderWidth: 10,
                 pointRadius: 20,
                 pointHoverRadius: 30,
                 directed: true,
-                arrowHeadSize: 16,
-                arrowHeadOffset: 20,
+                arrowHeadSize: 32,
+                arrowHeadOffset: 10,
                 datalabels: {
                     color: nodes.map((d) => d.color)
                 },
+                clip: 100,
                 data: nodes.map((d) => Object.assign({}, d)),
             }]
         },
@@ -30,7 +33,12 @@ function new_chart (nodes, id, type, orientation) {
                 orientation
             },
             layout: {
-                padding: 32
+                padding: {
+                    top: 20,
+                    bottom: 20,
+                    left: 100,
+                    right: 100,
+                }
             },
             plugins: {
                 legend: {
@@ -58,6 +66,25 @@ function new_chart (nodes, id, type, orientation) {
                     backgroundColor: 'red',
                      */
                 }
+            },
+            onClick: (e, els) => {
+                if (!els.length) return;
+                /* console.log(e);
+                console.log(els);
+                console.log(e.chart.canvas.id);
+                console.log(e.chart.getDatasetMeta(0)); */
+
+                let chart_index = e.chart.canvas.getAttribute('data-index');
+                let data = chart_data[chart_index];
+                let index = els[0].index;
+                let url = data[index].hasOwnProperty('url') ? data[index].url : false;
+
+                if (url) window.open(url, '_self');
+                
+            },
+            onHover: (e, els) => {
+                const target = e.native ? e.native.target : e.target;
+                target.style.cursor = els[0] ? 'pointer' : 'default';
             }
         }
     });

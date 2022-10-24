@@ -102,7 +102,7 @@ class Oxygen extends \Digitalis\Integration {
 					'id' => 'oxytocin_recent_template-' . $template->ID,
 					'parent' => 'oxytocin_recent_templates',
 					'title' => $template->post_title,
-					'href' => get_edit_post_link($template->ID),
+					'href' => get_edit_post_link($template->ID, 'raw'),
 				]);
 	
 			}
@@ -137,7 +137,7 @@ class Oxygen extends \Digitalis\Integration {
 					'id' => 'oxytocin_reusable_part-' . $i,
 					'parent' => 'oxytocin_reusable_parts',
 					'title' => $part->post_title,
-					'href' => get_edit_post_link($part->ID),
+					'href' => get_edit_post_link($part->ID, 'raw'),
 				]);
 
 			}
@@ -191,7 +191,7 @@ class Oxygen extends \Digitalis\Integration {
 				'id' => "{$parent_id}_{$depth}_$i",
 				'parent' => $parent_id,
 				'title' => "{$indent}{$symbol} {$depth}. {$post->post_title} ({$type})",
-				'href' => get_edit_post_link($post->ID),
+				'href' => get_edit_post_link($post->ID, 'raw'),
 			]);
 
 			$this->admin_menu_tree($post, $parent_id, $depth + 1, $indent . self::INDENT);
@@ -229,7 +229,7 @@ class Oxygen extends \Digitalis\Integration {
 						
 					if ($i > 0) echo " ";
 					echo "&lArr; ";
-					echo "<a href='" . get_edit_post_link($template->ID) . "'>{$template->post_title}</a>";
+					echo "<a href='" . get_edit_post_link($template->ID, 'raw') . "'>{$template->post_title}</a>";
 					
 				}
 
@@ -269,11 +269,11 @@ class Oxygen extends \Digitalis\Integration {
 				
 				$inheritance = Genealogist::get_inheritance($post_id);
 				
-				echo "<a href='" . get_edit_post_link($post_id) . "'>" . get_the_title($post_id) . "</a>";
+				echo "<a href='" . get_edit_post_link($post_id, 'raw') . "'>" . get_the_title($post_id) . "</a>";
 				
 				if ($inheritance) foreach ($inheritance as $i => $template) {
 						
-					echo " &lArr; <a href='" . get_edit_post_link($template->ID) . "'>{$template->post_title}</a>";
+					echo " &lArr; <a href='" . get_edit_post_link($template->ID, 'raw') . "'>{$template->post_title}</a>";
 				
 				}
 				
@@ -349,22 +349,14 @@ class Oxygen extends \Digitalis\Integration {
 		dprint($flat_tree);
 		return; */
 
-		$inheritance = Genealogist::get_inheritance($post->ID, true);
-		$reusable = Genealogist::get_reusable_parts($post->ID);
+		//$inheritance = Genealogist::get_inheritance($post->ID, true);
+		//$reusable = Genealogist::get_reusable_parts($post->ID);
 		
-		echo "<script src='https://unpkg.com/chart.js@3'></script>";
-		echo "<script src='https://unpkg.com/chartjs-chart-graph@3'></script>";
-		echo "<script src='https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2'></script>";
-
-		echo "<canvas class='oxytocin-graph' id='oxytocin-graph'></canvas>";
-
 		//echo "<script>new_chart(nodes, 'oxytocin-graph', 'dendogram', 'horizontal');</script>";
 
 		$chart = new Chart($tree);
-
-		echo "<script>new_chart(" . $chart->get_nodes() . ", 'oxytocin-graph', 'tree', 'horizontal');</script>";
-
-		dprint($chart->get_nodes());
+		$chart->render();
+		
 		//dprint($tree);
 
 		/* dprint("<hr>");

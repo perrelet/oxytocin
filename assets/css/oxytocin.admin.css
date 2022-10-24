@@ -2,5 +2,8 @@ body #test {
   background: red;
   color: green;
 }
+body .oxytocin-graph {
+  width: 100%;
+}
 
 /*# sourceMappingURL=oxytocin.admin.css.map */

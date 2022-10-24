@@ -5,8 +5,13 @@ namespace Oxytocin;
 class Chart extends Model {
 
 	protected $tree;
+	public static $count = 0;
+	protected $index;
 
 	public function __construct ($tree) {
+
+        $this->index = static::$count;
+		static::$count++;
 
 		if (property_exists($tree, 'structure') && $tree->structure == 'flat') {
 			$this->tree = $tree;
@@ -14,6 +19,29 @@ class Chart extends Model {
 			$this->tree = Genealogist::flatten_tree($tree);
 			
 		}
+
+	}
+
+	public function render ($id = 'oxytocin-graph') {
+
+		echo "<script src='https://unpkg.com/chart.js@3'></script>";
+		echo "<script src='https://unpkg.com/chartjs-chart-graph@3'></script>";
+		echo "<script src='https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2'></script>";
+
+		echo "<canvas class='oxytocin-graph' id='{$id}' data-index='{$this->index}'></canvas>";
+
+		$nodes = $this->get_nodes();
+
+		echo "<script>new_chart({$nodes}, '{$id}', 'tree', 'horizontal');</script>";
+		
+		if ($this->index == 0) {
+			echo "<script>let chart_data = [{$nodes}];</script>";
+		} else {
+			echo "<script>chart_data.push({$nodes});</script>";
+		}
+
+		dprint($nodes);
+		echo($nodes);
 
 	}
 
@@ -31,6 +59,7 @@ class Chart extends Model {
 				'name' 			=> $post->post_title,
 				'tree_index' 	=> $i,
 				'current' 		=> $post->ID == $current_id,
+				'url'			=> ($post->ID == $current_id) ? null : get_edit_post_link($post->ID, 'raw'),
 			];
 
 			switch ($post->type) {
