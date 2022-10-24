@@ -32,21 +32,26 @@ class Genealogist extends Utility {
 
 		$inheritance = self::get_inheritance($post_id, true);
 
-		if ($inheritance) {
-
-			$post = get_post($post_id);
-
-			if ($post->post_type == 'ct_template') {
-
-				$inheritance[0]->children = self::get_reusable_parts($post_id);
-
+		$post = get_post($post_id);
+		if ($post->post_type == 'ct_template') {
+			if (get_post_meta($post_id, 'ct_template_type', true)  == 'reusable_part') {
+				$post->type = 'reusable';
 			} else {
-
-				$post->type = 'post';
-				$inheritance[0]->children = [$post];
-				$inheritance[0]->children[0]->children = self::get_reusable_parts($post_id);
-
+				$post->type = 'template';
 			}
+		} else {
+			$post->type = 'post';
+		}
+
+		if ($inheritance) {
+			
+			$inheritance[0]->children = [$post];
+			$inheritance[0]->children[0]->children = self::get_reusable_parts($post_id);
+
+		} else {
+
+			$inheritance = [$post];
+			$inheritance[0]->children = self::get_reusable_parts($post_id);
 
 		}
 

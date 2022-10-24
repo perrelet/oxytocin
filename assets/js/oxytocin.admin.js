@@ -29,6 +29,7 @@ function new_chart (nodes, id, type, orientation) {
             }]
         },
         options: {
+            /* maintainAspectRatio: false, */
             tree: {
                 orientation
             },
