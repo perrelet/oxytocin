@@ -16,7 +16,7 @@ class Chart extends Model {
 		if (property_exists($tree, 'structure') && $tree->structure == 'flat') {
 			$this->tree = $tree;
 		} else {
-			//dprint($tree);
+			dprint($tree);
 			$this->tree = Genealogist::flatten_tree($tree);
 			
 		}

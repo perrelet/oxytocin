@@ -32,6 +32,8 @@ class Genealogist extends Utility {
 
 		$inheritance = self::get_inheritance($post_id, true);
 
+		dprint($inheritance);
+
 		$post = get_post($post_id);
 		if ($post->post_type == 'ct_template') {
 			if (get_post_meta($post_id, 'ct_template_type', true)  == 'reusable_part') {
@@ -45,13 +47,19 @@ class Genealogist extends Utility {
 
 		if ($inheritance) {
 			
-			$inheritance[0]->children = [$post];
-			$inheritance[0]->children[0]->children = self::get_reusable_parts($post_id);
+			//$inheritance[0]->children = [$post];
+			//$inheritance[0]->children[0]->children = self::get_reusable_parts($post_id);
+
+			self::add_children($inheritance[0], [$post]);
+			$last_child_index = count($inheritance[0]->children) - 1;
+			self::add_children($inheritance[0]->children[$last_child_index], self::get_reusable_parts($post_id));
 
 		} else {
 
 			$inheritance = [$post];
-			$inheritance[0]->children = self::get_reusable_parts($post_id);
+			//$inheritance[0]->children = self::get_reusable_parts($post_id);
+
+			self::add_children($inheritance[0], self::get_reusable_parts($post_id));
 
 		}
 
@@ -75,6 +83,16 @@ class Genealogist extends Utility {
 		$tree->children = [$template];
 
 		return $tree;
+
+	}
+
+	public static function add_children ($obj, $children) {
+
+		if (property_exists($obj, 'children') && $obj->children) {
+			$obj->children = array_merge($obj->children, $children);
+		} else {
+			$obj->children = $children;
+		}
 
 	}
 
