@@ -344,8 +344,11 @@ class Oxygen extends \Digitalis\Integration {
 		global $post;
 
 		$tree = Genealogist::get_tree($post->ID);
+		
+		/* $flat_tree = Genealogist::flatten_tree($tree, [], true);
+		dprint($flat_tree);
+		return; */
 
-		//$flat_tree = Genealogist::flatten_tree($tree, [], true);
 		$inheritance = Genealogist::get_inheritance($post->ID, true);
 		$reusable = Genealogist::get_reusable_parts($post->ID);
 		

@@ -16,11 +16,11 @@ class Genealogist extends Utility {
 			if ($parent_node >= 0) $post->parent_node = $parent_node;
 			$post->structure = 'flat';
 
-			$flat_tree[$n = count($flat_tree)] = $post;
+			$flat_tree[$post->ID] = $post;
 
 			$flat_tree = self::flatten_tree($post, $flat_tree);
 
-			$flat_tree[$n]->children = null;
+			$flat_tree[$post->ID]->children = null;
 
 		}
 

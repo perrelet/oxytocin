@@ -19,12 +19,13 @@ class Chart extends Model {
 
 	public function get_nodes () {
 
-		$data = [];
-
 		global $post;
-		$current_id = $post ? $post->ID : null;
 
-		if ($this->tree) foreach ($this->tree as $i => $post) {
+		$data = [];
+		$current_id = $post ? $post->ID : null;
+		$i = 0;
+
+		if ($this->tree) foreach ($this->tree as $post_id => $post) {
 
 			$node = [
 				'name' 			=> $post->post_title,
@@ -54,6 +55,7 @@ class Chart extends Model {
 			if (property_exists($post, 'parent_node')) $node['parent'] = $post->parent_node;
 
 			$data[] = $node;
+			$i++;
 
 		}
 
