@@ -25,6 +25,9 @@ class Oxytocin extends \Digitalis\Singleton {
         include OXYTOCIN_PATH . 'include/utils/utility.abstract.php';
         include OXYTOCIN_PATH . 'include/utils/genealogist.utility.php';
 
+        include OXYTOCIN_PATH . 'include/models/model.abstract.php';
+        include OXYTOCIN_PATH . 'include/models/chart.model.php';
+
         $this->load_integrations(OXYTOCIN_PATH . 'include/integrations');
 
     }
@@ -37,6 +40,7 @@ class Oxytocin extends \Digitalis\Singleton {
         add_action('admin_enqueue_scripts', function () {
 
             wp_enqueue_style('oxytocin-admin', OXYTOCIN_URI . 'assets/css/oxytocin.admin.css', [], OXYTOCIN_VERSION);
+            wp_enqueue_script('oxytocin-admin', OXYTOCIN_URI . 'assets/js/oxytocin.admin.js', [], OXYTOCIN_VERSION);
 
         });
 

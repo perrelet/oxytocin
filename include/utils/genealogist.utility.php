@@ -4,24 +4,47 @@ namespace Oxytocin;
 
 class Genealogist extends Utility {
 
-	public static $inheritance;
+	public static function flatten_tree ($tree, $flat_tree = []) {
+
+		$parent_node = count($flat_tree) - 1;
+
+		if (property_exists($tree, 'children') && $tree->children) foreach ($tree->children as $post) {
+
+			//if (!$post) continue;
+
+			$post->parent_id = property_exists($tree, 'ID') ? $tree->ID : null;
+			if ($parent_node >= 0) $post->parent_node = $parent_node;
+			$post->structure = 'flat';
+
+			$flat_tree[$n = count($flat_tree)] = $post;
+
+			$flat_tree = self::flatten_tree($post, $flat_tree);
+
+			$flat_tree[$n]->children = null;
+
+		}
+
+		return $flat_tree;
+
+	} 
 
     public static function get_tree ($post_id) {
 
-		self::$inheritance = self::get_inheritance($post_id, true);
+		$inheritance = self::get_inheritance($post_id, true);
 
-		if (self::$inheritance) {
+		if ($inheritance) {
 
 			$post = get_post($post_id);
 
 			if ($post->post_type == 'ct_template') {
 
-				self::$inheritance[0]->children = self::get_reusable_parts($post_id);
+				$inheritance[0]->children = self::get_reusable_parts($post_id);
 
 			} else {
 
-				self::$inheritance[0]->children = [$post];
-				self::$inheritance[0]->children[0]->children = self::get_reusable_parts($post_id);
+				$post->type = 'post';
+				$inheritance[0]->children = [$post];
+				$inheritance[0]->children[0]->children = self::get_reusable_parts($post_id);
 
 			}
 
@@ -30,9 +53,15 @@ class Genealogist extends Utility {
 		$template = null;
 		$prev_template = null;
 
-		if (self::$inheritance) foreach (self::$inheritance as $i => $template) {
+		if ($inheritance) foreach ($inheritance as $i => $template) {
 
-			if ($prev_template) $template->children = $prev_template;
+			if ($prev_template) {
+				if ($template->children) {
+					$template->children = array_merge($template->children, $prev_template);
+				} else {
+					$template->children = $prev_template;
+				}
+			}
 			$prev_template = [$template];
 
 		}
@@ -90,7 +119,7 @@ class Genealogist extends Utility {
 		
 		$parent = self::get_parent_template($template_id);
 		
-		if ($parent && $parts !== false) $parent->children = self::get_reusable_parts($parent->ID, true);
+		if ($parent && $parts) $parent->children = self::get_reusable_parts($parent->ID, true);
 
 		if (is_null($parent)) {
 

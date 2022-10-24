@@ -173,17 +173,17 @@ class Oxygen extends \Digitalis\Integration {
 
 		if (property_exists($tree, 'children') && $tree->children) foreach ($tree->children as $i => $post) {
 
-			if (property_exists($post, 'type')) {
-
-				if ($post->type == 'template') $type = 'Template';
-				if ($post->type == 'reusable') $type = 'Part';
-				$symbol = self::NEST;
-
-			} else {
+			if (!property_exists($post, 'type') || ($post->type == 'post')) {
 
 				$post_type = get_post_type_object($post->post_type);
 				$type = $post_type->labels->singular_name;
 				$symbol = self::CURRENT;
+				
+			} else {
+
+				if ($post->type == 'template') $type = 'Template';
+				if ($post->type == 'reusable') $type = 'Part';
+				$symbol = self::NEST;
 
 			}
 
@@ -344,18 +344,34 @@ class Oxygen extends \Digitalis\Integration {
 		global $post;
 
 		$tree = Genealogist::get_tree($post->ID);
+
+		//$flat_tree = Genealogist::flatten_tree($tree, [], true);
 		$inheritance = Genealogist::get_inheritance($post->ID, true);
 		$reusable = Genealogist::get_reusable_parts($post->ID);
 		
-		echo "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>";
+		echo "<script src='https://unpkg.com/chart.js@3'></script>";
+		echo "<script src='https://unpkg.com/chartjs-chart-graph@3'></script>";
+		echo "<script src='https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2'></script>";
 
-		dprint($tree);
+		echo "<canvas class='oxytocin-graph' id='oxytocin-graph'></canvas>";
+
+		//echo "<script>new_chart(nodes, 'oxytocin-graph', 'dendogram', 'horizontal');</script>";
+
+		$chart = new Chart($tree);
+
+		echo "<script>new_chart(" . $chart->get_nodes() . ", 'oxytocin-graph', 'tree', 'horizontal');</script>";
+
+		dprint($chart->get_nodes());
+		//dprint($tree);
+
+		/* dprint("<hr>");
+		dprint($flat_tree); */
+		//dprint("<hr>");
+		/* dprint($tree);
+		dprint("<hr>");
 		dprint($inheritance);
-		dprint("-----------------");
-		dprint("-----------------");
-		dprint("-----------------");
-		dprint("-----------------");
-		dprint($reusable);
+		dprint("<hr>");
+		dprint($reusable);  */
 
 	}
 
