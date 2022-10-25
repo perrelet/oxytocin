@@ -140,7 +140,7 @@ class Genealogist extends Utility {
 		
 		$parent = self::get_parent_template($template_id);
 		
-		if ($parent && $parts) $parent->children = self::get_reusable_parts($parent->ID, true);
+		if ($parent && $parts) self::add_children($parent, self::get_reusable_parts($parent->ID, true));
 
 		if (is_null($parent)) {
 
@@ -166,7 +166,7 @@ class Genealogist extends Utility {
 
 		if ($recursive && $parts) foreach ($parts as $part) {
 
-			$part->children = self::get_reusable_parts($part->ID, true);
+			self::add_children($part, self::get_reusable_parts($part->ID, true));
 
 		}
 
