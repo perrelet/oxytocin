@@ -32,8 +32,6 @@ class Genealogist extends Utility {
 
 		$inheritance = self::get_inheritance($post_id, true);
 
-		dprint($inheritance);
-
 		$post = get_post($post_id);
 		if ($post->post_type == 'ct_template') {
 			if (get_post_meta($post_id, 'ct_template_type', true)  == 'reusable_part') {

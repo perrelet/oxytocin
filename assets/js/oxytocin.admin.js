@@ -18,6 +18,7 @@ function new_chart (nodes, id, type, orientation) {
                 edgeLineBorderWidth: 10,
                 pointRadius: 20,
                 pointHoverRadius: 30,
+                pointBorderWidth: 0,
                 directed: true,
                 arrowHeadSize: 32,
                 arrowHeadOffset: 10,
