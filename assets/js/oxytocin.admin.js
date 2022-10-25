@@ -17,8 +17,10 @@ function new_chart (nodes, id, type, orientation) {
                 edgeLineBorderColor: '#e8e8e8',
                 edgeLineBorderWidth: 10,
                 pointRadius: 20,
-                pointHoverRadius: 30,
                 pointBorderWidth: 0,
+                pointBorderColor: '#e8e8e8',
+                pointHoverRadius: 30,
+                pointHoverBorderWidth: 0,
                 directed: true,
                 arrowHeadSize: 32,
                 arrowHeadOffset: 10,
@@ -46,9 +48,9 @@ function new_chart (nodes, id, type, orientation) {
                 legend: {
                     display: false
                 },
-                tooltip: {
+                /* tooltip: {
                     enabled: false
-                },
+                }, */
                 datalabels: {
                     formatter: function(value, context) {
 						//return value.name;// + "\n" + "(" + value.type + ")";

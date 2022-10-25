@@ -13,13 +13,15 @@ class Chart extends Model {
         $this->index = static::$count;
 		static::$count++;
 
-		if (property_exists($tree, 'structure') && $tree->structure == 'flat') {
+		$this->tree = $tree;
+
+		/* if (property_exists($tree, 'structure') && $tree->structure == 'flat') {
 			$this->tree = $tree;
 		} else {
 			//dprint($tree);
 			$this->tree = Genealogist::flatten_tree($tree);
 			
-		}
+		} */
 
 	}
 
@@ -51,7 +53,7 @@ class Chart extends Model {
 		$current_id = $post ? $post->ID : null;
 		$i = 0;
 
-		if ($this->tree) foreach ($this->tree as $post_id => $post) {
+		if ($this->tree->get_flat_tree()) foreach ($this->tree->get_flat_tree() as $post_id => $post) {
 
 			$node = [
 				'name' 			=> $post->post_title,

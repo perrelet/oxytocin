@@ -4,30 +4,6 @@ namespace Oxytocin;
 
 class Genealogist extends Utility {
 
-	public static function flatten_tree ($tree, $flat_tree = []) {
-
-		$parent_node = count($flat_tree) - 1;
-
-		if (property_exists($tree, 'children') && $tree->children) foreach ($tree->children as $post) {
-
-			//if (!$post) continue;
-
-			$post->parent_id = property_exists($tree, 'ID') ? $tree->ID : null;
-			if ($parent_node >= 0) $post->parent_node = $parent_node;
-			$post->structure = 'flat';
-
-			$flat_tree[$post->ID] = $post;
-
-			$flat_tree = self::flatten_tree($post, $flat_tree);
-
-			$flat_tree[$post->ID]->children = null;
-
-		}
-
-		return $flat_tree;
-
-	} 
-
     public static function get_tree ($post_id) {
 
 		$inheritance = self::get_inheritance($post_id, true);
@@ -77,8 +53,7 @@ class Genealogist extends Utility {
 
 		}
 
-		$tree = new \stdClass();
-		$tree->children = [$template];
+		$tree = new Tree($template);
 
 		return $tree;
 

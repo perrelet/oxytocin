@@ -118,7 +118,7 @@ class Oxygen extends \Digitalis\Integration {
 				'href' => false,
 			]);
 
-			$this->admin_menu_tree($tree);
+			$this->admin_menu_tree($tree->get_tree());
 
 		}
 
@@ -344,6 +344,13 @@ class Oxygen extends \Digitalis\Integration {
 		global $post;
 
 		$tree = Genealogist::get_tree($post->ID);
+
+		/* if (count($tree->children) <= 1) {
+
+		} */
+
+		$chart = new Chart($tree);
+		$chart->render();
 		
 		/* $flat_tree = Genealogist::flatten_tree($tree, [], true);
 		dprint($flat_tree);
@@ -354,8 +361,7 @@ class Oxygen extends \Digitalis\Integration {
 		
 		//echo "<script>new_chart(nodes, 'oxytocin-graph', 'dendogram', 'horizontal');</script>";
 
-		$chart = new Chart($tree);
-		$chart->render();
+
 		
 		//dprint($tree);
 

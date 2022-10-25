@@ -27,6 +27,7 @@ class Oxytocin extends \Digitalis\Singleton {
 
         include OXYTOCIN_PATH . 'include/models/model.abstract.php';
         include OXYTOCIN_PATH . 'include/models/chart.model.php';
+        include OXYTOCIN_PATH . 'include/models/tree.model.php';
 
         $this->load_integrations(OXYTOCIN_PATH . 'include/integrations');
 
