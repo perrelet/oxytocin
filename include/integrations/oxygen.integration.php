@@ -96,14 +96,22 @@ class Oxygen extends \Digitalis\Integration {
 
 			foreach ($templates as $template) {
 
-				// We cant link directly to the builder as oxygen would require us to check each posts shortcodes for a ct_inner_content block. 
+				//Genealogist::check_inner_content($template);
+
+				/* // We cant link directly to the builder as oxygen would require us to check each posts shortcodes for a ct_inner_content block. 
 	
 				$wp_admin_bar->add_menu( [
 					'id' => 'oxytocin_recent_template-' . $template->ID,
 					'parent' => 'oxytocin_recent_templates',
 					'title' => $template->post_title,
 					'href' => get_edit_post_link($template->ID, 'raw'),
-				]);
+				]); */
+
+				$this->admin_menu_oxygen_link(
+					'oxytocin_recent_template-' . $template->ID,
+					'oxytocin_recent_templates',
+					$template
+				);
 	
 			}
 
@@ -133,12 +141,11 @@ class Oxygen extends \Digitalis\Integration {
 
 			foreach ($reusable as $i => $part) {
 
-				$wp_admin_bar->add_menu( [
-					'id' => 'oxytocin_reusable_part-' . $i,
-					'parent' => 'oxytocin_reusable_parts',
-					'title' => $part->post_title,
-					'href' => get_edit_post_link($part->ID, 'raw'),
-				]);
+				$this->admin_menu_oxygen_link(
+					'oxytocin_reusable_part-' . $i,
+					'oxytocin_reusable_parts',
+					$part,
+				);
 
 			}
 
@@ -187,16 +194,42 @@ class Oxygen extends \Digitalis\Integration {
 
 			}
 
-			$wp_admin_bar->add_menu( [
-				'id' => "{$parent_id}_{$depth}_$i",
-				'parent' => $parent_id,
-				'title' => "{$indent}{$symbol} {$depth}. {$post->post_title} ({$type})",
-				'href' => get_edit_post_link($post->ID, 'raw'),
-			]);
+			$this->admin_menu_oxygen_link(
+				"{$parent_id}_{$depth}_$i",
+				$parent_id,
+				$post,
+				"{$indent}{$symbol} {$depth}. {$post->post_title} ({$type})"
+			);
 
 			$this->admin_menu_tree($post, $parent_id, $depth + 1, $indent . self::INDENT);
 
 		}
+
+	}
+
+	public function admin_menu_oxygen_link ($id, $parent_id, $post, $title = null) {
+
+		global $wp_admin_bar;
+
+		if (is_null($title)) $title = $post->post_title;
+
+		$wp_admin_bar->add_menu( [
+			'id' => $id,
+			'parent' => $parent_id,
+			'title' =>  $title,
+			'href' => get_edit_post_link($post->ID, 'raw'),
+		]);
+
+		$url = ct_get_post_builder_link($post->ID);
+		$url .= (property_exists($post, 'inner') && $post->inner) ? '&ct_inner=true' : '';
+
+		$wp_admin_bar->add_menu( [
+			'id' => $id . "_oxy",
+			'parent' => $id,
+			'title' =>  "Edit with Oxygen",
+			'href' => $url,
+		]);
+		
 
 	}
 
@@ -345,9 +378,9 @@ class Oxygen extends \Digitalis\Integration {
 
 		$tree = Genealogist::get_tree($post->ID);
 
-		/* if (count($tree->children) <= 1) {
-
-		} */
+		if (property_exists($tree, 'children') && count($tree->children) <= 1) {
+			
+		}
 
 		$chart = new Chart($tree);
 		$chart->render();

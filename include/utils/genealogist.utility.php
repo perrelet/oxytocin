@@ -9,6 +9,8 @@ class Genealogist extends Utility {
 		$inheritance = self::get_inheritance($post_id, true);
 
 		$post = get_post($post_id);
+		if ($inheritance) self::check_inner_content($post, $inheritance[0]);
+
 		if ($post->post_type == 'ct_template') {
 			if (get_post_meta($post_id, 'ct_template_type', true)  == 'reusable_part') {
 				$post->type = 'reusable';
@@ -36,11 +38,17 @@ class Genealogist extends Utility {
 			self::add_children($inheritance[0], self::get_reusable_parts($post_id));
 
 		}
+/* 		if ($inheritance) for ($i = (count($inheritance) - 1); $i >= 0; $i--) {
+			if ($i < (count($inheritance) - 1)) dprint($inheritance[$i]->post_title . " -> parent -> " . $inheritance[$i + 1]->post_title);
+			//if ($i < (count($inheritance) - 1)) self::check_inner_content($inheritance[$i], $inheritance[$i + 1]);
+		} */
 
 		$template = null;
 		$prev_template = null;
 
 		if ($inheritance) foreach ($inheritance as $i => $template) {
+
+			if ($i < count($inheritance) - 1) self::check_inner_content($template, $inheritance[$i + 1]);
 
 			if ($prev_template) {
 				if ($template->children) {
@@ -91,8 +99,36 @@ class Genealogist extends Utility {
 		
 		$template = get_post($parent_id);
 		$template->type = 'template';
+
 		return $template;
 		
+	}
+
+	public static function check_inner_content ($post, $parent) {
+
+		if ($json = get_post_meta($parent->ID, 'ct_builder_json', true)) {
+			$post->inner = self::find_inner_content(json_decode($json, true));
+		} else {
+			$post->inner = false;
+		}
+
+		return $post;
+
+	}
+
+	public static function find_inner_content ($elements, $inner = false) {
+
+		if (!$elements || !isset($elements['children'])) return false;
+
+		foreach ($elements['children'] as $element) {
+
+			if ($element['name'] == 'ct_inner_content') return true;
+			if (isset($element['children'])) $inner = self::find_inner_content($element, $inner);
+
+		}
+
+		return $inner;
+
 	}
 
 	public static function get_inheritance ($post_id, $parts = false) {
@@ -100,14 +136,18 @@ class Genealogist extends Utility {
 		if (get_post_type($post_id) == 'ct_template') {
 
 			$template_id = $post_id;
+			$inheritance = [];
 
 		} else {
 
 			$template_id = self::get_template_id($post_id);
+			$template = get_post($template_id);
+			$template->type = 'template';
+			$inheritance = [$template];
 
 		}
 		
-		return self::get_template_inheritance($template_id, $parts);
+		return self::get_template_inheritance($template_id, $parts, $inheritance);
 
 	}
 
