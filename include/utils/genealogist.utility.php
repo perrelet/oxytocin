@@ -79,7 +79,7 @@ class Genealogist extends Utility {
 
 	public static function get_template_id ($post_id) {
 
-		$template_id = get_post_meta($post_id, 'ct_other_template', true );
+		$template_id = intval(get_post_meta($post_id, 'ct_other_template', true));
 
 		if (empty($template_id)) {
 			if (!$page_template = ct_get_posts_template($post_id)) return null;
@@ -141,6 +141,7 @@ class Genealogist extends Utility {
 		} else {
 
 			$template_id = self::get_template_id($post_id);
+			if ($template_id == -1) return [];
 			$template = get_post($template_id);
 			$template->type = 'template';
 			$inheritance = [$template];
