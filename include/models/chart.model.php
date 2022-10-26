@@ -28,7 +28,10 @@ class Chart extends Model {
 		echo "<script src='https://unpkg.com/chartjs-chart-graph@3'></script>";
 		echo "<script src='https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2'></script>";
 
-		echo "<div class='oxytocin-graph-wrap'><canvas class='oxytocin-graph' id='{$id}' data-index='{$this->index}'></canvas></div>";
+		echo "<div class='oxytocin-graph-wrap loading'>";
+			echo "<div class='chart-loader'></div>";
+			echo "<canvas class='oxytocin-graph' id='{$id}' data-index='{$this->index}'></canvas>";
+		echo "</div>";
 
 		$nodes = $this->get_nodes();
 

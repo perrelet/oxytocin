@@ -32,17 +32,6 @@ function new_chart (nodes, index, type, orientation) {
 
         ctx_open: function (index, x, y) {
 
-
-            
-
-            /* let edit_url = data[index].hasOwnProperty('url') ? data[index].url : false;
-                    if (edit_url) {
-                        document.getElementById("chart-context-edit").href = '';
-                    } else {
-    
-                    } */
-            
-
             this.ctx_show_all();
 
             pt = chart_data[this.index][index];
@@ -93,8 +82,22 @@ function new_chart (nodes, index, type, orientation) {
 
         create_chart: function (nodes, index, type, orientation) {
 
+            var OxtocinPlugin = {
+
+                afterRender: function(chart, options) {
+
+                    if (chart.$rendered) return;
+                    
+                    chart.$rendered = true;
+
+                    chart.canvas.parentElement.classList.remove('loading');
+
+                }
+
+            };
+
             return new Chart(document.getElementById('oxytocin-graph-' + index).getContext("2d"), {
-                plugins: [ChartDataLabels],
+                plugins: [OxtocinPlugin, ChartDataLabels],
                 type,
                 data: {
                     /* labels: nodes.map((d) => d.info), */
