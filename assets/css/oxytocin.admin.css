@@ -81,17 +81,20 @@
   pointer-events: none;
   opacity: 0;
 }
-#chart-context-menu > * {
+#chart-context-menu #chart-context-inner {
+  margin-bottom: -1px;
+}
+#chart-context-menu #chart-context-inner > * {
   display: block;
   padding: 0.5rem 1rem;
   max-width: 260px;
   min-width: 100px;
   width: 100%;
 }
-#chart-context-menu > *:not(:last-child) {
+#chart-context-menu #chart-context-inner > *:not(:last-child) {
   border-bottom: 1px solid #eee;
 }
-#chart-context-menu > div.title {
+#chart-context-menu #chart-context-inner > div.title {
   color: #777;
   padding: 0.5rem 1rem;
   font-size: 12px;
@@ -99,27 +102,27 @@
   letter-spacing: 1px;
   pointer-events: none;
 }
-#chart-context-menu > div.info {
+#chart-context-menu #chart-context-inner > div.info {
   color: #666;
   font-size: 14px;
 }
-#chart-context-menu > a {
+#chart-context-menu #chart-context-inner > a {
   color: #333;
   text-decoration: none;
   transition: 0.1s;
 }
-#chart-context-menu > a:hover {
+#chart-context-menu #chart-context-inner > a:hover {
   background-color: #eee;
   background: #19b878;
   color: white;
 }
-#chart-context-menu.template > a:hover {
+#chart-context-menu.template #chart-context-inner > a:hover {
   background: rgb(25, 184, 120);
 }
-#chart-context-menu.part > a:hover {
+#chart-context-menu.part #chart-context-inner > a:hover {
   background: rgb(238, 122, 72);
 }
-#chart-context-menu.post > a:hover {
+#chart-context-menu.post #chart-context-inner > a:hover {
   background: rgb(59, 98, 161);
 }
 

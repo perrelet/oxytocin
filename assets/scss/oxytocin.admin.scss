@@ -103,51 +103,57 @@
         opacity: 0;
     }
 
-    > * {
+    #chart-context-inner {
 
-        display: block;
-        padding: 0.5rem 1rem ;
-        max-width: 260px;
-        min-width: 100px;
-        width: 100%;
+        margin-bottom: -1px;
 
-        &:not(:last-child) {
-            border-bottom: 1px solid #eee;
+        > * {
+
+            display: block;
+            padding: 0.5rem 1rem ;
+            max-width: 260px;
+            min-width: 100px;
+            width: 100%;
+    
+            &:not(:last-child) {
+                border-bottom: 1px solid #eee;
+            }
+    
+        }
+
+        > div.title {
+
+            color: #777;
+            padding: 0.5rem 1rem;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            pointer-events: none;
+
+        }
+
+        > div.info {
+            color: #666;
+            font-size: 14px;
+        }
+
+        > a {
+
+            color: #333;
+            text-decoration: none;
+            transition: 0.1s;
+
+            &:hover {
+                background-color: #eee;
+                background: #19b878;
+                color: white;
+            }
         }
 
     }
 
-    > div.title {
-
-        color: #777;
-        padding: 0.5rem 1rem;
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        pointer-events: none;
-
-    }
-
-    > div.info {
-        color: #666;
-        font-size: 14px;
-    }
-
-    > a {
-
-        color: #333;
-        text-decoration: none;
-        transition: 0.1s;
-
-        &:hover {
-            background-color: #eee;
-            background: #19b878;
-            color: white;
-        }
-    }
-
-    &.template > a:hover { background: rgb(25,184,120); }
-    &.part > a:hover { background: rgb(238,122,72); }
-    &.post > a:hover { background: rgb(59,98,161); }
+    &.template #chart-context-inner > a:hover { background: rgb(25,184,120); }
+    &.part #chart-context-inner > a:hover { background: rgb(238,122,72); }
+    &.post #chart-context-inner > a:hover { background: rgb(59,98,161); }
 
 }
