@@ -11,7 +11,7 @@ function new_chart (nodes, id, type, orientation) {
         plugins: [ChartDataLabels],
         type,
         data: {
-            labels: nodes.map((d) => d.name),
+            /* labels: nodes.map((d) => d.info), */
             datasets: [{
                 pointBackgroundColor: nodes.map((d) => d.color),
                 edgeLineBorderColor: '#e8e8e8',
@@ -24,9 +24,9 @@ function new_chart (nodes, id, type, orientation) {
                 directed: true,
                 arrowHeadSize: 32,
                 arrowHeadOffset: 10,
-                datalabels: {
+                /* datalabels: {
                     color: nodes.map((d) => d.color)
-                },
+                }, */
                 clip: 100,
                 data: nodes.map((d) => Object.assign({}, d)),
             }]
@@ -48,9 +48,9 @@ function new_chart (nodes, id, type, orientation) {
                 legend: {
                     display: false
                 },
-                /* tooltip: {
+                tooltip: {
                     enabled: false
-                }, */
+                },
                 datalabels: {
                     formatter: function(value, context) {
 						//return value.name;// + "\n" + "(" + value.type + ")";
@@ -64,7 +64,9 @@ function new_chart (nodes, id, type, orientation) {
                     textAlign: 'center',
                     font: {
                         size: 16
-                    }
+                    },
+                    labels: {
+                    },
                     /* display: true,
                     color: '#36A2EB',
                     backgroundColor: 'red',

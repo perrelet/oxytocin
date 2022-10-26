@@ -49,6 +49,24 @@ class Tree extends Model {
 
 		return $flat_tree;
 
-	} 
+	}
+    
+    public function get_meta ($tree = null) {
+
+        if (is_null($tree)) $tree = $this->tree;
+
+        if (property_exists($tree, 'children') && $tree->children) foreach ($tree->children as $post) {
+
+            if ($post->post_type == 'ct_template') {
+                $post->info = htmlspecialchars_decode(get_post_meta($post->ID, Oxygen::$notes_key, true));
+            }
+
+            $this->get_meta($post);
+
+        }
+
+        return $this->tree;
+
+    }
 
 }

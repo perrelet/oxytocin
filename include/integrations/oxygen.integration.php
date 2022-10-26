@@ -7,7 +7,8 @@ use Generator;
 class Oxygen extends \Digitalis\Integration {
 
 	protected $templates;
-	protected $desc_key = 'oxytocin_notes';
+
+	public static $notes_key = 'oxytocin_notes';
 
 	const INDENT = 	"&nbsp;&nbsp;&nbsp;&nbsp;";
 	const NEST = 	"&rdca;";
@@ -72,7 +73,6 @@ class Oxygen extends \Digitalis\Integration {
 	public function admin_bar_menu () {
 
 		global $wp_admin_bar, $post;
-		$post_type = get_post_type_object(get_post_type($post));
 
 		if (!$wp_admin_bar->get_node('oxygen_admin_bar_menu')) return;
 
@@ -237,7 +237,7 @@ class Oxygen extends \Digitalis\Integration {
 				break;
 				
 			case 'digitalis_notes':
-				echo wp_trim_words(get_post_meta($post_id, $this->desc_key, true));
+				echo wp_trim_words(get_post_meta($post_id, self::$notes_key, true));
 				break;
 			
 		}
@@ -395,10 +395,10 @@ class Oxygen extends \Digitalis\Integration {
 
 		wp_nonce_field( basename( __FILE__ ), 'digitalis' );
 
-		$notes = esc_textarea(get_post_meta($post->ID, $this->desc_key, true));
+		$notes = esc_textarea(get_post_meta($post->ID, self::$notes_key, true));
 		
 		echo "<label>Template Notes:</label>";
-		echo "<textarea name=$this->desc_key class='widefat'>{$notes}</textarea>";
+		echo "<textarea name='" . self::$notes_key . "' class='widefat'>{$notes}</textarea>";
 
 		
 	}
@@ -408,10 +408,10 @@ class Oxygen extends \Digitalis\Integration {
 		if (!current_user_can('edit_post', $post_id)) return;
 		if ('revision' === $post->post_type) return;
 	
-		if (isset($_POST[$this->desc_key]) && wp_verify_nonce($_POST['digitalis'], basename(__FILE__))) {
+		if (isset($_POST[self::$notes_key]) && wp_verify_nonce($_POST['digitalis'], basename(__FILE__))) {
 
 			$meta = [];
-			$meta[$this->desc_key] = esc_textarea($_POST[$this->desc_key]);
+			$meta[self::$notes_key] = esc_textarea($_POST[self::$notes_key]);
 			
 			foreach ($meta as $key => $value) {
 	

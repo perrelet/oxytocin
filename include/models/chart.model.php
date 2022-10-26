@@ -13,6 +13,7 @@ class Chart extends Model {
         $this->index = static::$count;
 		static::$count++;
 
+		$tree->get_meta();
 		$this->tree = $tree;
 
 		/* if (property_exists($tree, 'structure') && $tree->structure == 'flat') {
@@ -60,6 +61,7 @@ class Chart extends Model {
 				'tree_index' 	=> $i,
 				'current' 		=> $post->ID == $current_id,
 				'url'			=> ($post->ID == $current_id) ? null : get_edit_post_link($post->ID, 'raw'),
+				'info'			=> $post->info,
 			];
 
 			switch ($post->type) {
