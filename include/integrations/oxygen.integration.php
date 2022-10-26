@@ -110,7 +110,9 @@ class Oxygen extends \Digitalis\Integration {
 				$this->admin_menu_oxygen_link(
 					'oxytocin_recent_template-' . $template->ID,
 					'oxytocin_recent_templates',
-					$template
+					$template,
+					null,
+					false
 				);
 	
 			}
@@ -207,7 +209,7 @@ class Oxygen extends \Digitalis\Integration {
 
 	}
 
-	public function admin_menu_oxygen_link ($id, $parent_id, $post, $title = null) {
+	public function admin_menu_oxygen_link ($id, $parent_id, $post, $title = null, $direct_edit = true) {
 
 		global $wp_admin_bar;
 
@@ -220,16 +222,19 @@ class Oxygen extends \Digitalis\Integration {
 			'href' => get_edit_post_link($post->ID, 'raw'),
 		]);
 
-		$url = ct_get_post_builder_link($post->ID);
-		$url .= (property_exists($post, 'inner') && $post->inner) ? '&ct_inner=true' : '';
+		if ($direct_edit) {
 
-		$wp_admin_bar->add_menu( [
-			'id' => $id . "_oxy",
-			'parent' => $id,
-			'title' =>  "Edit with Oxygen",
-			'href' => $url,
-		]);
-		
+			$url = ct_get_post_builder_link($post->ID);
+			$url .= (property_exists($post, 'inner') && $post->inner) ? '&ct_inner=true' : '';
+	
+			$wp_admin_bar->add_menu( [
+				'id' => $id . "_oxy",
+				'parent' => $id,
+				'title' =>  "Edit with Oxygen",
+				'href' => $url,
+			]);
+
+		}
 
 	}
 

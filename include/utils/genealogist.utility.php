@@ -77,7 +77,7 @@ class Genealogist extends Utility {
 
 	}
 
-	public static function get_template_id ($post_id) {
+	public static function get_template ($post_id) {
 
 		$template_id = intval(get_post_meta($post_id, 'ct_other_template', true));
 
@@ -86,7 +86,12 @@ class Genealogist extends Utility {
 			$template_id = $page_template->ID;
 		}
 
-		return $template_id;
+		if ($template_id == -1) return null;
+
+		$template = get_post($template_id);
+		$template->type = 'template';
+
+		return $template;
 
 	}
 
@@ -140,10 +145,8 @@ class Genealogist extends Utility {
 
 		} else {
 
-			$template_id = self::get_template_id($post_id);
-			if ($template_id == -1) return [];
-			$template = get_post($template_id);
-			$template->type = 'template';
+			if (!$template = self::get_template($post_id)) return [];
+			$template_id = $template->ID;
 			$inheritance = [$template];
 
 		}
