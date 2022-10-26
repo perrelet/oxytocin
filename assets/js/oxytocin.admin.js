@@ -18,6 +18,8 @@ function new_chart (nodes, index, type, orientation) {
                 menu: null,
                 edit: null,
                 builder: null,
+                info: null,
+                notes: null,
             }
         },
 
@@ -39,6 +41,7 @@ function new_chart (nodes, index, type, orientation) {
             this.ctx_update_item('edit', pt, 'url', 'href');
             this.ctx_update_item('edit', pt, 'open_label', 'innerText');
             this.ctx_update_item('builder', pt, 'builder', 'href');
+            if(!this.ctx_update_item('notes', pt, 'notes', 'innerText')) this.el.context.info.style.display = 'none';
 
             this.el.context.menu.style.left = x + "px";
             this.el.context.menu.style.top = y + "px";
@@ -57,15 +60,20 @@ function new_chart (nodes, index, type, orientation) {
 
             this.el.context.edit.style.display = 'block';
             this.el.context.builder.style.display = 'block';
+            this.el.context.builder.style.display = 'block';
+            this.el.context.info.style.display = 'block';
+            this.el.context.notes.style.display = 'block';
 
         },
 
         ctx_update_item: function (item, pt, key, prop, is_critical = true) {
 
-            if (pt.hasOwnProperty(key)) {
+            if (pt.hasOwnProperty(key) && pt[key]) {
                 this.el.context[item][prop] = pt[key];
+                return true;
             } else {
                 if (is_critical) this.el.context[item].style.display = 'none';
+                return false;
             }
 
         },
@@ -75,6 +83,8 @@ function new_chart (nodes, index, type, orientation) {
             this.el.context.menu = document.getElementById('chart-context-menu');
             this.el.context.edit = document.getElementById('chart-context-edit');
             this.el.context.builder = document.getElementById('chart-context-builder');
+            this.el.context.info = document.getElementById('chart-context-info');
+            this.el.context.notes = document.getElementById('chart-context-notes');
 
             this.el.context.menu.addEventListener('mouseleave', this.ctx_close.bind(this));
 
@@ -91,6 +101,10 @@ function new_chart (nodes, index, type, orientation) {
                     chart.$rendered = true;
 
                     chart.canvas.parentElement.classList.remove('loading');
+
+                    setTimeout(function(){
+                        chart.canvas.parentElement.classList.add('loaded');
+                    }.bind(chart), 1000);
 
                 }
 

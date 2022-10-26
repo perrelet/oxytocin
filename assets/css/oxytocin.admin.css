@@ -12,6 +12,9 @@
 .oxytocin-graph-wrap.loading .chart-loader {
   opacity: 1;
 }
+.oxytocin-graph-wrap:not(.loading).loaded .chart-loader {
+  display: none;
+}
 .oxytocin-graph-wrap:after {
   background-image: url(https://digitalis.ca/wp-content/uploads/2022/08/grid.01.svg);
   background-size: 300px auto;
@@ -43,7 +46,7 @@
   z-index: 11;
   transition: 1s;
   pointer-events: none;
-  border: 16px solid #f3f3f3;
+  border: 16px solid rgba(238, 238, 238, 0.4666666667);
   border-top: 16px solid #aaa;
   border-radius: 50%;
   width: 72px;
@@ -81,21 +84,29 @@
 #chart-context-menu > * {
   display: block;
   padding: 0.5rem 1rem;
+  max-width: 260px;
   min-width: 100px;
   width: 100%;
 }
-#chart-context-menu > div {
+#chart-context-menu > *:not(:last-child) {
+  border-bottom: 1px solid #eee;
+}
+#chart-context-menu > div.title {
   color: #777;
   padding: 0.5rem 1rem;
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
+  pointer-events: none;
+}
+#chart-context-menu > div.info {
+  color: #666;
+  font-size: 14px;
 }
 #chart-context-menu > a {
-  color: #111;
+  color: #333;
   text-decoration: none;
   transition: 0.1s;
-  border-top: 1px solid #eee;
 }
 #chart-context-menu > a:hover {
   background-color: #eee;

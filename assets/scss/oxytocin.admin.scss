@@ -19,6 +19,12 @@
 
     }
 
+    &:not(.loading).loaded {
+        .chart-loader {
+            display: none;
+        }
+    }
+
     &:after {
         background-image: url(https://digitalis.ca/wp-content/uploads/2022/08/grid.01.svg);
         background-size: 300px auto;
@@ -56,7 +62,7 @@
         transition: 1s;
         pointer-events: none;
 
-        border: 16px solid #f3f3f3;
+        border: 16px solid #eeeeee77;
         border-top: 16px solid #aaa;
         border-radius: 50%;
         width: 72px;
@@ -101,27 +107,37 @@
 
         display: block;
         padding: 0.5rem 1rem ;
+        max-width: 260px;
         min-width: 100px;
         width: 100%;
 
+        &:not(:last-child) {
+            border-bottom: 1px solid #eee;
+        }
+
     }
 
-    > div {
+    > div.title {
 
         color: #777;
         padding: 0.5rem 1rem;
         font-size: 12px;
         text-transform: uppercase;
         letter-spacing: 1px;
+        pointer-events: none;
 
+    }
+
+    > div.info {
+        color: #666;
+        font-size: 14px;
     }
 
     > a {
 
-        color: #111;
+        color: #333;
         text-decoration: none;
         transition: 0.1s;
-        border-top: 1px solid #eee;
 
         &:hover {
             background-color: #eee;

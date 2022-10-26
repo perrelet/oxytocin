@@ -66,7 +66,7 @@ class Chart extends Model {
 				'current' 		=> $post->ID == $current_id,
 				'url'			=> ($post->ID == $current_id) ? null : get_edit_post_link($post->ID, 'raw'),
 				'builder'		=> Genealogist::get_builder_url($post),
-				'info'			=> $post->info,
+				'notes'			=> $post->info,
 			];
 
 			switch ($post->type) {
@@ -110,9 +110,11 @@ class Chart extends Model {
 	protected function context_menu () {
 
 		echo "<nav id='chart-context-menu'>";
-			echo "<div>Options</div>";
+			echo "<div class='title'>Options</div>";
 			echo "<a id='chart-context-edit' href='#'>Open</a>";
 			echo "<a id='chart-context-builder' href='#'>Edit with Oxygen</a>";
+			echo "<div id='chart-context-info' class='title'>Info</div>";
+			echo "<div id='chart-context-notes' class='info'></div>";
 		echo "</nav>";
 
 	}
