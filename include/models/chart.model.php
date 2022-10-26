@@ -77,7 +77,7 @@ class Chart extends Model {
 
 				case 'reusable':
 					$node['color']		= 'rgb(238,122,72)';//"#ffa600";//'#ffcd56';//'rgb(238,122,72)';
-					$node['type']		= 'tart';
+					$node['type']		= 'part';
 					$node['post_type']	= 'Part';
 					$node['open_label']	= 'Open Reusable Part';
 					break;

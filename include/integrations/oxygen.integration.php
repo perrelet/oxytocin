@@ -144,7 +144,7 @@ class Oxygen extends \Digitalis\Integration {
 				$this->admin_menu_oxygen_link(
 					'oxytocin_reusable_part-' . $i,
 					'oxytocin_reusable_parts',
-					$part,
+					$part
 				);
 
 			}
