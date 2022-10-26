@@ -20,25 +20,30 @@ class Chart extends Model {
 
 	}
 
-	public function render ($id = 'oxytocin-graph') {
+	public function render () {
+
+		$id = 'oxytocin-graph-' . $this->index;
 
 		echo "<script src='https://unpkg.com/chart.js@3'></script>";
 		echo "<script src='https://unpkg.com/chartjs-chart-graph@3'></script>";
 		echo "<script src='https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2'></script>";
 
-		echo "<div class='{$id}-wrap'><canvas class='oxytocin-graph' id='{$id}' data-index='{$this->index}'></canvas></div>";
+		echo "<div class='oxytocin-graph-wrap'><canvas class='oxytocin-graph' id='{$id}' data-index='{$this->index}'></canvas></div>";
 
 		$nodes = $this->get_nodes();
 
-		echo "<script>new_chart({$nodes}, '{$id}', 'tree', 'horizontal');</script>";
+		echo "<script>new_chart({$nodes}, '{$this->index}', 'tree', 'horizontal');</script>";
 		
 		if ($this->index == 0) {
-			echo "<script>let chart_data = [{$nodes}];</script>";
-		} else {
-			echo "<script>chart_data.push({$nodes});</script>";
-		}
 
-		
+			echo "<script>let chart_data = [{$nodes}];</script>";
+			$this->context_menu();
+
+		} else {
+
+			echo "<script>chart_data.push({$nodes});</script>";
+
+		}
 
 	}
 
@@ -57,25 +62,32 @@ class Chart extends Model {
 				'tree_index' 	=> $i,
 				'current' 		=> $post->ID == $current_id,
 				'url'			=> ($post->ID == $current_id) ? null : get_edit_post_link($post->ID, 'raw'),
+				'builder'		=> Genealogist::get_builder_url($post),
 				'info'			=> $post->info,
 			];
 
 			switch ($post->type) {
 
 				case 'template':
-					$node['color'] = 'rgb(25,184,120)';//"#7bc667";//'#4bc0c1';//'rgb(25,184,120)';
-					$node['type'] = 'Template';
+					$node['color']		= 'rgb(25,184,120)';//"#7bc667";//'#4bc0c1';//'rgb(25,184,120)';
+					$node['type']		= 'template';
+					$node['post_type']	= 'Template';
+					$node['open_label']	= 'Open Template';
 					break;
 
 				case 'reusable':
-					$node['color'] = 'rgb(238,122,72)';//"#ffa600";//'#ffcd56';//'rgb(238,122,72)';
-					$node['type'] = 'Part';
+					$node['color']		= 'rgb(238,122,72)';//"#ffa600";//'#ffcd56';//'rgb(238,122,72)';
+					$node['type']		= 'tart';
+					$node['post_type']	= 'Part';
+					$node['open_label']	= 'Open Reusable Part';
 					break;
 
 				default:
-					$node['color'] = 'rgb(59,98,161)';//"#4bc0c1";//'#3aa8e3';//'rgb(59,98,161)';
-					$post_type = get_post_type_object($post->post_type);
-					$node['type'] = $post_type->labels->singular_name;
+					$node['color']		= 'rgb(59,98,161)';//"#4bc0c1";//'#3aa8e3';//'rgb(59,98,161)';
+					$post_type			= get_post_type_object($post->post_type);
+					$node['type']		= 'post';
+					$node['post_type']	= $post_type->labels->singular_name;
+					$node['open_label']	= 'Open ' . $post_type->labels->singular_name;
 
 			}
 
@@ -89,6 +101,16 @@ class Chart extends Model {
 		}
 
 		return json_encode($data);
+
+	}
+
+	protected function context_menu () {
+
+		echo "<nav id='chart-context-menu'>";
+			echo "<div>Options</div>";
+			echo "<a id='chart-context-edit' href='#'>Open</a>";
+			echo "<a id='chart-context-builder' href='#'>Edit with Oxygen</a>";
+		echo "</nav>";
 
 	}
 
