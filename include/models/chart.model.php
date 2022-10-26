@@ -26,7 +26,7 @@ class Chart extends Model {
 		echo "<script src='https://unpkg.com/chartjs-chart-graph@3'></script>";
 		echo "<script src='https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2'></script>";
 
-		echo "<canvas class='oxytocin-graph' id='{$id}' data-index='{$this->index}'></canvas>";
+		echo "<div class='{$id}-wrap'><canvas class='oxytocin-graph' id='{$id}' data-index='{$this->index}'></canvas></div>";
 
 		$nodes = $this->get_nodes();
 
@@ -37,6 +37,8 @@ class Chart extends Model {
 		} else {
 			echo "<script>chart_data.push({$nodes});</script>";
 		}
+
+		
 
 	}
 
@@ -61,21 +63,23 @@ class Chart extends Model {
 			switch ($post->type) {
 
 				case 'template':
-					$node['color'] = 'rgb(25,184,120)';
+					$node['color'] = 'rgb(25,184,120)';//"#7bc667";//'#4bc0c1';//'rgb(25,184,120)';
 					$node['type'] = 'Template';
 					break;
 
 				case 'reusable':
-					$node['color'] = 'rgb(238,122,72)';
+					$node['color'] = 'rgb(238,122,72)';//"#ffa600";//'#ffcd56';//'rgb(238,122,72)';
 					$node['type'] = 'Part';
 					break;
 
 				default:
-					$node['color'] = 'rgb(59,98,161)';
+					$node['color'] = 'rgb(59,98,161)';//"#4bc0c1";//'#3aa8e3';//'rgb(59,98,161)';
 					$post_type = get_post_type_object($post->post_type);
 					$node['type'] = $post_type->labels->singular_name;
 
 			}
+
+			$node['label_color'] = $node['current'] ? $node['color'] : '#999';
 
 			if (property_exists($post, 'parent_node')) $node['parent'] = $post->parent_node;
 
