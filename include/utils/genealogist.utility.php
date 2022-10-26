@@ -48,7 +48,11 @@ class Genealogist extends Utility {
 
 		if ($inheritance) foreach ($inheritance as $i => $template) {
 
-			if ($i < count($inheritance) - 1) self::check_inner_content($template, $inheritance[$i + 1]);
+			if ($i < count($inheritance) - 1) {
+				self::check_inner_content($template, $inheritance[$i + 1]);
+			} else {
+				$template->inner = false;
+			}
 
 			if ($prev_template) {
 				if ($template->children) {
@@ -205,6 +209,7 @@ class Genealogist extends Utility {
 				$part = get_post($element['options']['view_id']);
 				$part->nicename = $element['options']['nicename'];
 				$part->type = 'reusable';
+				$part->inner = false;
 				$reusable[] = $part;
 
 			}
@@ -214,6 +219,17 @@ class Genealogist extends Utility {
 		}
 
 		return $reusable;
+
+	}
+
+	public static function get_builder_url ($post) {
+
+		if (!property_exists($post, 'inner')) return false;
+
+		$url = ct_get_post_builder_link($post->ID);
+		$url .= $post->inner ? '&ct_inner=true' : '';
+
+		return $url;
 
 	}
 

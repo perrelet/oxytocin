@@ -18,8 +18,6 @@ class Chart extends Model {
 
 		global $post;
 
-		//dprint($tree);
-
 	}
 
 	public function render ($id = 'oxytocin-graph') {
@@ -51,7 +49,7 @@ class Chart extends Model {
 		$i = 0;
 
 		if ($this->tree->get_flat_tree()) foreach ($this->tree->get_flat_tree() as $post_id => $post) {
-
+			
 			$node = [
 				'name' 			=> $post->post_title,
 				'tree_index' 	=> $i,
