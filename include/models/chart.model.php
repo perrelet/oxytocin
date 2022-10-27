@@ -61,11 +61,14 @@ class Chart extends Model {
 
 		if ($this->tree->get_flat_tree()) foreach ($this->tree->get_flat_tree() as $post_id => $post) {
 			
+			jprint($post);
+			jprint($post->ID . " ?? " . $current_id);
+
 			$node = [
 				'name' 			=> $post->post_title,
 				'tree_index' 	=> $i,
-				'current' 		=> $post->ID == $current_id,
-				'url'			=> ($post->ID == $current_id) ? null : get_edit_post_link($post->ID, 'raw'),
+				'current' 		=> $post->ID === $current_id,
+				'url'			=> ($post->ID === $current_id) ? null : get_edit_post_link($post->ID, 'raw'),
 				'builder'		=> Genealogist::get_builder_url($post),
 				'notes'			=> $post->info,
 			];
@@ -86,6 +89,13 @@ class Chart extends Model {
 					$node['open_label']	= 'Open Reusable Part';
 					break;
 
+				case 'section':
+					$node['color']		= '#cd55fc';//'rgb(238,122,72)';//"#ffa600";//'#ffcd56';//'rgb(238,122,72)';
+					$node['type']		= 'section';
+					$node['post_type']	= 'Section';
+					$node['open_label']	= 'Open Parent';
+					break;
+
 				default:
 					$node['color']		= '#cd55fc';//'rgb(59,98,161)';//"#4bc0c1";//'#3aa8e3';//'rgb(59,98,161)';
 					$post_type			= get_post_type_object($post->post_type);
@@ -101,6 +111,8 @@ class Chart extends Model {
 			$i++;
 
 		}
+
+		jprint($data);
 
 		return json_encode($data);
 

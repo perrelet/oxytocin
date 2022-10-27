@@ -87,18 +87,18 @@ function new_chart (nodes, index, type, orientation, theme) {
                 data: {
                     /* labels: nodes.map((d) => d.info), */
                     datasets: [{
-                        pointBackgroundColor: nodes.map((d) => d.color),
-                        edgeLineBorderColor: themes[this.theme].edge,
-                        edgeLineBorderWidth: 10,
-                        pointRadius: 20,
-                        pointBorderWidth: 8,
-                        pointBorderColor: themes[this.theme].edge,
-                        pointHoverRadius: 30,
-                        pointHoverBorderWidth: 8,
-                        pointHoverBorderColor: themes[this.theme].edge,
-                        directed: true,
-                        arrowHeadSize: 0,
-                        arrowHeadOffset: 20,
+                        pointBackgroundColor:       nodes.map((d) => d.color),
+                        edgeLineBorderColor:        themes[this.theme].edge,
+                        edgeLineBorderWidth:        10,
+                        pointRadius:                nodes.map((d) => d.type == 'section' ? 12 : 20),
+                        pointBorderWidth:           8,
+                        pointBorderColor:           themes[this.theme].edge,
+                        pointHoverRadius:           nodes.map((d) => d.type == 'section' ? 18 : 30),
+                        pointHoverBorderWidth:      8,
+                        pointHoverBorderColor:      themes[this.theme].edge,
+                        directed:                   true,
+                        arrowHeadSize:              0,
+                        arrowHeadOffset:            20,
                         datalabels: {
                             color: nodes.map((d) => d.current ? d.color : themes[this.theme].label)
                         },
@@ -108,7 +108,7 @@ function new_chart (nodes, index, type, orientation, theme) {
                     }]
                 },
                 options: {
-                    maintainAspectRatio: false,
+                    /* maintainAspectRatio: false, */
                     tree: {
                         orientation
                     },

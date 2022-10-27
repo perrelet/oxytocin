@@ -130,7 +130,7 @@ class Oxygen extends \Digitalis\Integration {
 
 		}
 
-		if ($reusable = Genealogist::get_reusable_parts($post->ID)) {
+		if ($reusable = Genealogist::get_reusable_parts($post, true, false)) {
 
 			$wp_admin_bar->add_menu( [
 				'id' => 'oxytocin_reusable_parts',
@@ -180,7 +180,7 @@ class Oxygen extends \Digitalis\Integration {
 
 		if (property_exists($tree, 'children') && $tree->children) foreach ($tree->children as $i => $post) {
 
-			if (!property_exists($post, 'type') || ($post->type == 'post')) {
+			if ($post->type == 'post') {
 
 				$post_type = get_post_type_object($post->post_type);
 				$type = $post_type->labels->singular_name;
@@ -194,14 +194,21 @@ class Oxygen extends \Digitalis\Integration {
 
 			}
 
-			$this->admin_menu_oxygen_link(
-				"{$parent_id}_{$depth}_$i",
-				$parent_id,
-				$post,
-				"{$indent}{$symbol} {$depth}. {$post->post_title} ({$type})"
-			);
+			if ($post->type != 'section') {
 
-			$this->admin_menu_tree($post, $parent_id, $depth + 1, $indent . self::INDENT);
+				$this->admin_menu_oxygen_link(
+					"{$parent_id}_{$depth}_$i",
+					$parent_id,
+					$post,
+					"{$indent}{$symbol} {$depth}. {$post->post_title} ({$type})"
+				);
+
+				$depth++;
+				$indent .= self::INDENT;
+
+			}
+
+			$this->admin_menu_tree($post, $parent_id, $depth, $indent);
 
 		}
 
