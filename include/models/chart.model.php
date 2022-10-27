@@ -110,12 +110,14 @@ class Chart extends Model {
 	protected function context_menu () {
 
 		echo "<nav id='chart-context-menu'>";
-			echo "<div id='chart-context-inner'>";
-				echo "<div class='title'>Options</div>";
-				echo "<a id='chart-context-edit' href='#'>Open</a>";
-				echo "<a id='chart-context-builder' href='#'>Edit with Oxygen</a>";
-				echo "<div id='chart-context-info' class='title'>Info</div>";
-				echo "<div id='chart-context-notes' class='info'></div>";
+			echo "<div class='chart-context-box'>";
+				echo "<div class='chart-context-items'>";
+					echo "<div class='title'>Options</div>";
+					echo "<a id='chart-context-edit' href='#'>Open</a>";
+					echo "<a id='chart-context-builder' href='#'>Edit with Oxygen</a>";
+					echo "<div id='chart-context-info' class='title'>Info</div>";
+					echo "<div id='chart-context-notes' class='info'></div>";
+				echo "</div>";
 			echo "</div>";
 		echo "</nav>";
 

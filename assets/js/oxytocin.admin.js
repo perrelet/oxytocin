@@ -192,8 +192,8 @@ function new_chart (nodes, index, type, orientation) {
                         //let data = chart_data[chart_index];
 
                         let index = els[0].index;
-                        let x = e.native.clientX - 16;
-                        let y = e.native.clientY - 16;
+                        let x = e.native.clientX - 46;
+                        let y = e.native.clientY - 46;
                         let open_context = this.ctx_open.bind(this);
 
                         open_context(index, x, y);
