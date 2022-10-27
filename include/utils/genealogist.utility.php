@@ -212,6 +212,18 @@ class Genealogist extends Utility {
 				$part->inner = false;
 				$reusable[] = $part;
 
+			} else if ($element['name'] == 'ct_section') {
+
+				//$part = new \WP_Post((new \stdClass())->post_title = 'test');
+				$x = new \stdClass();
+				$x->ID = 1;
+				$x->post_title = 'SECTION';
+				$part = new \WP_Post($x);
+				$part->nicename = $element['options']['nicename'];
+				$part->type = 'section';
+				$part->inner = false;
+				$reusable[] = $part;
+
 			}
 
 			if (isset($element['children'])) $reusable = self::find_reusable_parts($element, $reusable);
