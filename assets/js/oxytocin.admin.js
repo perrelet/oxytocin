@@ -6,7 +6,18 @@ Chart.defaults.set('plugins.datalabels', {
  */
   
 
-function new_chart (nodes, index, type, orientation) {
+function new_chart (nodes, index, type, orientation, theme) {
+
+    var themes = {
+        light: {
+            edge: '#fff',
+            label: '#999'
+        },
+        dark: {
+            edge: '#443961',//'#4f4353',//#fbf0ff',
+            label: '#fbf0ff'
+        },
+    }
 
     let oxytocin_chart = {
 
@@ -20,8 +31,11 @@ function new_chart (nodes, index, type, orientation) {
                 builder: null,
                 info: null,
                 notes: null,
-            }
+            },
+            wrap: null,
         },
+
+        theme: theme,
 
         init: function (index) {
 
@@ -32,53 +46,10 @@ function new_chart (nodes, index, type, orientation) {
 
         },
 
-        ctx_open: function (index, x, y) {
-
-            this.ctx_show_all();
-
-            pt = chart_data[this.index][index];
-
-            this.ctx_update_item('edit', pt, 'url', 'href');
-            this.ctx_update_item('edit', pt, 'open_label', 'innerText');
-            this.ctx_update_item('builder', pt, 'builder', 'href');
-            if(!this.ctx_update_item('notes', pt, 'notes', 'innerText')) this.el.context.info.style.display = 'none';
-
-            this.el.context.menu.style.left = x + "px";
-            this.el.context.menu.style.top = y + "px";
-            this.el.context.menu.classList.add(pt.type);
-            this.el.context.menu.classList.add('open');
-
-        },
-
-        ctx_close: function () {
-
-            this.el.context.menu.className = "";
-
-        },
-
-        ctx_show_all: function () {
-
-            this.el.context.edit.style.display = 'block';
-            this.el.context.builder.style.display = 'block';
-            this.el.context.builder.style.display = 'block';
-            this.el.context.info.style.display = 'block';
-            this.el.context.notes.style.display = 'block';
-
-        },
-
-        ctx_update_item: function (item, pt, key, prop, is_critical = true) {
-
-            if (pt.hasOwnProperty(key) && pt[key]) {
-                this.el.context[item][prop] = pt[key];
-                return true;
-            } else {
-                if (is_critical) this.el.context[item].style.display = 'none';
-                return false;
-            }
-
-        },
-
         ready: function () {
+
+            this.el.wrap = this.chart.canvas.parentElement;
+            this.el.wrap.classList.add('theme-' + this.theme);
 
             this.el.context.menu = document.getElementById('chart-context-menu');
             this.el.context.edit = document.getElementById('chart-context-edit');
@@ -117,19 +88,19 @@ function new_chart (nodes, index, type, orientation) {
                     /* labels: nodes.map((d) => d.info), */
                     datasets: [{
                         pointBackgroundColor: nodes.map((d) => d.color),
-                        edgeLineBorderColor: '#fff',
+                        edgeLineBorderColor: themes[this.theme].edge,
                         edgeLineBorderWidth: 10,
                         pointRadius: 20,
                         pointBorderWidth: 8,
-                        pointBorderColor: '#fff',
+                        pointBorderColor: themes[this.theme].edge,
                         pointHoverRadius: 30,
                         pointHoverBorderWidth: 8,
-                        pointHoverBorderColor: "#fff",
+                        pointHoverBorderColor: themes[this.theme].edge,
                         directed: true,
                         arrowHeadSize: 0,
                         arrowHeadOffset: 20,
                         datalabels: {
-                            color: nodes.map((d) => d.label_color)
+                            color: nodes.map((d) => d.current ? d.color : themes[this.theme].label)
                         },
                         clip: 100,
                         //pointStyle: img,
@@ -137,7 +108,7 @@ function new_chart (nodes, index, type, orientation) {
                     }]
                 },
                 options: {
-                    /* maintainAspectRatio: false, */
+                    maintainAspectRatio: false,
                     tree: {
                         orientation
                     },
@@ -208,6 +179,52 @@ function new_chart (nodes, index, type, orientation) {
                     }
                 }
             });
+
+        },
+
+        ctx_open: function (index, x, y) {
+
+            this.ctx_show_all();
+
+            pt = chart_data[this.index][index];
+
+            this.ctx_update_item('edit', pt, 'url', 'href');
+            this.ctx_update_item('edit', pt, 'open_label', 'innerText');
+            this.ctx_update_item('builder', pt, 'builder', 'href');
+            if(!this.ctx_update_item('notes', pt, 'notes', 'innerText')) this.el.context.info.style.display = 'none';
+
+            this.el.context.menu.style.left = x + "px";
+            this.el.context.menu.style.top = y + "px";
+            this.el.context.menu.classList.add(pt.type);
+            this.el.context.menu.classList.add('open');
+
+        },
+
+        ctx_close: function () {
+
+            this.el.context.menu.className = "";
+
+        },
+
+        ctx_show_all: function () {
+
+            this.el.context.edit.style.display = 'block';
+            this.el.context.builder.style.display = 'block';
+            this.el.context.builder.style.display = 'block';
+            this.el.context.info.style.display = 'block';
+            this.el.context.notes.style.display = 'block';
+
+        },
+
+        ctx_update_item: function (item, pt, key, prop, is_critical = true) {
+
+            if (pt.hasOwnProperty(key) && pt[key]) {
+                this.el.context[item][prop] = pt[key];
+                return true;
+            } else {
+                if (is_critical) this.el.context[item].style.display = 'none';
+                return false;
+            }
 
         }
 
