@@ -59,10 +59,9 @@ class Chart extends Model {
 		$current_id = $post ? $post->ID : null;
 		$i = 0;
 
+		jprint($this->tree->get_flat_tree());
+
 		if ($this->tree->get_flat_tree()) foreach ($this->tree->get_flat_tree() as $post_id => $post) {
-			
-			jprint($post);
-			jprint($post->ID . " ?? " . $current_id);
 
 			$node = [
 				'name' 			=> $post->post_title,

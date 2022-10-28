@@ -33,17 +33,21 @@ class Tree extends Model {
 
 		$parent_node = count($flat_tree) - 1;
 
-		if (property_exists($tree, 'children') && $tree->children) foreach ($tree->children as $post) {
+		if (property_exists($tree, 'children') && $tree->children) {
+            
 
-			$post->parent_id = property_exists($tree, 'ID') ? $tree->ID : null;
-			if ($parent_node >= 0) $post->parent_node = $parent_node;
-			$post->structure = 'flat';
+            foreach ($tree->children as $i => $post) {
 
-			$flat_tree[$post->ID] = $post;
+                $post->structure = 'flat';
+                $post->parent_id = property_exists($tree, 'ID') ? $tree->ID : null;
+                if ($parent_node >= 0) $post->parent_node = $parent_node;
+                
+                $flat_tree[$post->ID] = $post;
+                $flat_tree = $this->flatten($post, $flat_tree);
 
-			$flat_tree = $this->flatten($post, $flat_tree);
+                $flat_tree[$post->ID]->children = null;
 
-			$flat_tree[$post->ID]->children = null;
+            }
 
 		}
 

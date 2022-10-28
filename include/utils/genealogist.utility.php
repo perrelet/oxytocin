@@ -33,15 +33,10 @@ class Genealogist extends Utility {
 		} else {
 
 			$inheritance = [$post];
-			//$inheritance[0]->children = self::get_reusable_parts($post_id);
 
 			self::add_children($inheritance[0], self::get_reusable_parts($post));
 
 		}
-/* 		if ($inheritance) for ($i = (count($inheritance) - 1); $i >= 0; $i--) {
-			if ($i < (count($inheritance) - 1)) dprint($inheritance[$i]->post_title . " -> parent -> " . $inheritance[$i + 1]->post_title);
-			//if ($i < (count($inheritance) - 1)) self::check_inner_content($inheritance[$i], $inheritance[$i + 1]);
-		} */
 
 		$template = null;
 		$prev_template = null;
@@ -54,18 +49,13 @@ class Genealogist extends Utility {
 				$template->inner = false;
 			}
 
-			/* if ($template->inner) {
-				jprint($template->post_name . " - " . $template->inner);
-				jprint($template->children);
-			} */
-
 			if ($prev_template) {
 
-				if ($prev_template->inner && (strpos($prev_template->inner, "-") !== false) && $template->children) {
+				if ($prev_template->inner && (strpos($prev_template->inner_location, "-") !== false) && $template->children) {
 
 					foreach ($template->children as $child) {
 
-						if ($child->ID == $prev_template->inner) {
+						if ($child->ID == $prev_template->inner_location) {
 
 							//jprint("Adding " . $prev_template->post_title . " as a child of {$child->post_title}");
 							self::add_children($child, [$prev_template]);
@@ -140,7 +130,8 @@ class Genealogist extends Utility {
 	public static function check_inner_content ($post, $parent) {
 
 		if ($json = get_post_meta($parent->ID, 'ct_builder_json', true)) {
-			$post->inner = self::find_inner_content(json_decode($json, true), $parent->ID);
+			//$post->inner = self::find_inner_content(json_decode($json, true), $parent->ID);
+			self::find_inner_content($post, $parent, json_decode($json, true));
 		} else {
 			$post->inner = false;
 		}
@@ -149,31 +140,31 @@ class Genealogist extends Utility {
 
 	}
 
-	public static function find_inner_content ($elements, $parent_id, $inner = false, $section_id = false) {
+	public static function find_inner_content ($post, $parent, $elements) {
 
-		if (!$elements || !isset($elements['children'])) return false;
+		if (!$elements || !isset($elements['children'])) return;
 
 		foreach ($elements['children'] as $element) {
 
 			switch ($element['name']) {
 
-				case 'ct_reusable':
+				//case 'ct_reusable':
 				case 'ct_section':
 
-					$section_id = $element['id'];
+					$post->section_id = $element['id'];
 					break;
 
 				case 'ct_inner_content':
 
-					return $section_id ? ($parent_id . "-" . $section_id) : $parent_id;
+					$post->inner_location = $post->section_id ? ($parent->ID . "-" . $post->section_id) : $parent->ID;
+					$post->inner = true;
+					return;
 
 			}
 
-			if (isset($element['children'])) $inner = self::find_inner_content($element, $parent_id, $inner, $section_id);
+			if (isset($element['children'])) self::find_inner_content($post, $parent, $element);
 
 		}
-
-		return $inner;
 
 	}
 
@@ -187,6 +178,8 @@ class Genealogist extends Utility {
 		} else {
 
 			if (!$template = self::get_template($post_id)) return [];
+			if ($parts) self::add_children($template, self::get_reusable_parts($template, true));
+
 			$template_id = $template->ID;
 			$inheritance = [$template];
 
@@ -199,7 +192,7 @@ class Genealogist extends Utility {
     public static function get_template_inheritance ($template_id, $parts = false, $inheritance = []) {
 		
 		$parent = self::get_parent_template($template_id);
-		
+
 		if ($parent && $parts) self::add_children($parent, self::get_reusable_parts($parent, true));
 
 		if (is_null($parent)) {
