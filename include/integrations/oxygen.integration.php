@@ -381,9 +381,7 @@ class Oxygen extends \Digitalis\Integration {
 
 	public function render_dependency_meta_box () {
 
-		global $post;
-
-		$tree = Genealogist::get_tree($post->ID);
+		$tree = Genealogist::get_tree(get_the_ID());
 
 		if (property_exists($tree, 'children') && count($tree->children) <= 1) {
 			
@@ -396,8 +394,8 @@ class Oxygen extends \Digitalis\Integration {
 		dprint($flat_tree);
 		return; */
 
-		//$inheritance = Genealogist::get_inheritance($post->ID, true);
-		//$reusable = Genealogist::get_reusable_parts($post->ID);
+		//$inheritance = Genealogist::get_inheritance($post_clone->ID, true);
+		//$reusable = Genealogist::get_reusable_parts($post_clone->ID);
 		
 		//echo "<script>new_chart(nodes, 'oxytocin-graph', 'dendogram', 'horizontal');</script>";
 

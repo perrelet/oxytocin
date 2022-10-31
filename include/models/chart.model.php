@@ -53,10 +53,8 @@ class Chart extends Model {
 
 	public function get_nodes () {
 
-		global $post;
-
 		$data = [];
-		$current_id = $post ? $post->ID : null;
+		$current_id = get_the_ID();
 		$i = 0;
 
 		jprint($this->tree->get_flat_tree());
