@@ -341,7 +341,7 @@ class Oxygen extends \Digitalis\Integration {
 
 			add_meta_box(
 				'oxytocin_dependencies',
-				__('Oxytocin', 'digitalis'),
+				'<span>Oxytocin: ' . __('Template Map', 'digitalis') . ' <sup>1.0</sup></span>',
 				[$this, 'render_dependency_meta_box'],
 				$post_type->name,
 				'advanced',

@@ -84,28 +84,28 @@ class Chart extends Model {
 			switch ($post->type) {
 
 				case 'template':
-					$node['color']		= '#25d1a0';//'rgb(25,184,120)';//"#7bc667";//'#4bc0c1';//'rgb(25,184,120)';
+					//$node['color']	= '#25d1a0';//'rgb(25,184,120)';//"#7bc667";//'#4bc0c1';//'rgb(25,184,120)';
 					$node['type']		= 'template';
 					$node['post_type']	= 'Template';
 					$node['open_label']	= 'Open Template';
 					break;
 
 				case 'reusable':
-					$node['color']		= '#f9bb3e';//'rgb(238,122,72)';//"#ffa600";//'#ffcd56';//'rgb(238,122,72)';
+					//$node['color']	= '#f9bb3e';//'rgb(238,122,72)';//"#ffa600";//'#ffcd56';//'rgb(238,122,72)';
 					$node['type']		= 'part';
 					$node['post_type']	= 'Part';
 					$node['open_label']	= 'Open Reusable Part';
 					break;
 
 				case 'section':
-					$node['color']		= '#cd55fc';//'rgb(238,122,72)';//"#ffa600";//'#ffcd56';//'rgb(238,122,72)';
+					//$node['color']	= '#cd55fc';//'rgb(238,122,72)';//"#ffa600";//'#ffcd56';//'rgb(238,122,72)';
 					$node['type']		= 'section';
 					$node['post_type']	= 'Section';
 					$node['open_label']	= 'Open Parent';
 					break;
 
 				default:
-					$node['color']		= '#cd55fc';//'rgb(59,98,161)';//"#4bc0c1";//'#3aa8e3';//'rgb(59,98,161)';
+					//$node['color']	= '#cd55fc';//'rgb(59,98,161)';//"#4bc0c1";//'#3aa8e3';//'rgb(59,98,161)';
 					$post_type			= get_post_type_object($post->post_type);
 					$node['type']		= 'post';
 					$node['post_type']	= $post_type->labels->singular_name;

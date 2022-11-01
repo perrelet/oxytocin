@@ -10,12 +10,28 @@ function new_chart (nodes, index, type, orientation, theme) {
 
     var themes = {
         light: {
-            edge: '#fff',
-            label: '#999'
+            colors: {
+                edge: '#fff',
+                label: '#999',
+                node: {
+                    template: '#25d1a0',
+                    part: '#f9bb3e',
+                    section: '#cd55fc',
+                    post: '#cd55fc',
+                }
+            }
         },
         dark: {
-            edge: '#443961',//'#4f4353',//#fbf0ff',
-            label: '#fbf0ff'
+            colors: {
+                edge: '#443961',
+                label: '#fbf0ff',
+                node: {
+                    template: '#25d1a0',
+                    part: '#f9bb3e',
+                    section: '#cd55fc',
+                    post: '#cd55fc',
+                }
+            }
         },
     }
 
@@ -87,20 +103,21 @@ function new_chart (nodes, index, type, orientation, theme) {
                 data: {
                     /* labels: nodes.map((d) => d.info), */
                     datasets: [{
-                        pointBackgroundColor:       nodes.map((d) => d.color),
-                        edgeLineBorderColor:        themes[this.theme].edge,
+                        //pointBackgroundColor:       nodes.map((d) => d.color),
+                        pointBackgroundColor:       nodes.map((d) => themes[this.theme].colors.node[d.type]),
+                        edgeLineBorderColor:        themes[this.theme].colors.edge,
                         edgeLineBorderWidth:        10,
                         pointRadius:                nodes.map((d) => d.type == 'section' ? 12 : 20),
                         pointBorderWidth:           8,
-                        pointBorderColor:           themes[this.theme].edge,
+                        pointBorderColor:           themes[this.theme].colors.edge,
                         pointHoverRadius:           nodes.map((d) => d.type == 'section' ? 18 : 30),
                         pointHoverBorderWidth:      8,
-                        pointHoverBorderColor:      themes[this.theme].edge,
+                        pointHoverBorderColor:      themes[this.theme].colors.edge,
                         directed:                   true,
                         arrowHeadSize:              0,
                         arrowHeadOffset:            20,
                         datalabels: {
-                            color: nodes.map((d) => d.current ? d.color : themes[this.theme].label)
+                            color: nodes.map((d) => d.current ? d.color : themes[this.theme].colors.label)
                         },
                         clip: 100,
                         //pointStyle: img,
