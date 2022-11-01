@@ -7,6 +7,8 @@ class Tree extends Model {
     protected $tree;
     protected $flat;
 
+    protected $info = null;
+
     public function __construct ($children) {
 
         $children = is_array($children) ? $children : [$children];
@@ -19,6 +21,44 @@ class Tree extends Model {
     public function get_tree () {
 
         return $this->tree;
+
+    }
+
+    public function get_info () {
+
+        $this->info = (object) [
+            'depth' => 0,
+            'width' => 0,
+            'widths' => [],
+        ];
+
+        $this->iterate_get_info($this->tree);
+
+        if ($this->info->widths) foreach ($this->info->widths as $width) $this->info->width = max($this->info->width, $width);
+
+        return $this->info;
+
+    }
+
+    protected function iterate_get_info ($tree, $depth = 0) {
+
+        $this->info->depth = max($this->info->depth, $depth);
+
+        if (isset($this->info->widths[$depth])) {
+            $this->info->widths[$depth]++;
+        } else {
+            $this->info->widths[$depth] = 1;
+        }
+
+        if (property_exists($tree, 'children') && $tree->children) {
+
+            foreach ($tree->children as $i => $post) {
+
+                $this->iterate_get_info($post, $depth + 1);
+
+            }
+
+        }
 
     }
 

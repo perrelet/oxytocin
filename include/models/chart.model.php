@@ -4,9 +4,11 @@ namespace Oxytocin;
 
 class Chart extends Model {
 
-	protected $tree;
 	public static $count = 0;
+
 	protected $index;
+	protected $tree;
+	protected $nodes;
 
 	public function __construct ($tree) {
 
@@ -37,17 +39,19 @@ class Chart extends Model {
 		echo "</div>";
 
 		$nodes = $this->get_nodes();
+		$json = json_encode($nodes);
+		
 
-		echo "<script>new_chart({$nodes}, '{$this->index}', 'tree', 'horizontal', '{$theme}');</script>";
+		echo "<script>new_chart({$json}, '{$this->index}', 'tree', 'horizontal', '{$theme}');</script>";
 		
 		if ($this->index == 0) {
 
-			echo "<script>let chart_data = [{$nodes}];</script>";
+			echo "<script>let chart_data = [{$json}];</script>";
 			$this->context_menu();
 
 		} else {
 
-			echo "<script>chart_data.push({$nodes});</script>";
+			echo "<script>chart_data.push({$json});</script>";
 
 		}
 
@@ -55,10 +59,12 @@ class Chart extends Model {
 
 	public function get_nodes () {
 
-		$data = [];
+		$this->nodes = [];
+
 		$current_id = get_the_ID();
 		$i = 0;
 
+		jprint($this->tree->get_info());
 		jprint($this->tree->get_flat_tree());
 
 		if ($this->tree->get_flat_tree()) foreach ($this->tree->get_flat_tree() as $post_id => $post) {
@@ -106,14 +112,14 @@ class Chart extends Model {
 
 			if (property_exists($post, 'parent_node')) $node['parent'] = $post->parent_node;
 
-			$data[] = $node;
+			$this->nodes[] = $node;
 			$i++;
 
 		}
 
-		jprint($data);
+		jprint($this->nodes);
 
-		return json_encode($data);
+		return $this->nodes;
 
 	}
 
