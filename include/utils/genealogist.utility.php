@@ -273,7 +273,7 @@ class Genealogist extends Utility {
 
 	public static function get_builder_url ($post) {
 
-		if (!property_exists($post, 'inner')) return false;
+		if (!property_exists($post, 'inner')) return false; // These should be posts inherting templates that dont have an inner content block
 
 		$url = ct_get_post_builder_link($post->ID);
 		$url .= $post->inner ? '&ct_inner=true' : '';

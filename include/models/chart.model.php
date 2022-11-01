@@ -20,7 +20,9 @@ class Chart extends Model {
 
 	}
 
-	public function render ($theme = 'dark') {
+	public function render ($theme = 'light') {
+
+		if (isset($_GET['theme'])) $theme = $_GET['theme'];
 
 		$id = 'oxytocin-graph-' . $this->index;
 
