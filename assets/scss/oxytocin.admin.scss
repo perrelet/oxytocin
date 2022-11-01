@@ -1,6 +1,9 @@
 .oxytocin-graph-wrap {
 
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
     border-radius: 2rem;
     box-shadow: 0px 1.5px 3.6px rgb(0 0 0 / 2%), 0px 4.1px 10px rgb(0 0 0 / 3%), 0px 9.9px 24.1px rgb(0 0 0 / 4%), 0px 33px 80px rgb(0 0 0 / 6%), 0px 0px 0px 1rem white inset, 0px 0px 0px calc(1rem + 2px) whitesmoke inset;

@@ -34,15 +34,16 @@ class Chart extends Model {
 
 		$id = 'oxytocin-graph-' . $this->index;
 		$height = 160 + $tree_info->width * 140;
+		$width = 360 * $tree_info->depth;
 
 		echo "<script src='https://unpkg.com/chart.js@3'></script>";
 		echo "<script src='https://unpkg.com/chartjs-chart-graph@3'></script>";
 		echo "<script src='https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2'></script>";
 
-		echo "<div class='oxytocin-graph-wrap loading' style='height: {$height}px'>";
+		echo "<div class='oxytocin-graph-wrap loading' style='height: {$height}px;'>";
 			echo "<div class='oxytocin-graph-title'>Template Map <sup>1.0</sup></div>";
 			echo "<div class='chart-loader'></div>";
-			echo "<canvas class='oxytocin-graph' id='{$id}' data-index='{$this->index}'></canvas>";
+			echo "<canvas class='oxytocin-graph' id='{$id}' data-index='{$this->index}' style='max-width: {$width}px;'></canvas>";
 		echo "</div>";
 
 		echo "<script>new_chart({$json}, '{$this->index}', 'tree', 'horizontal', '{$theme}');</script>";
