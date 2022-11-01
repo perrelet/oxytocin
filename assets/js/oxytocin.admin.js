@@ -108,7 +108,7 @@ function new_chart (nodes, index, type, orientation, theme) {
                     }]
                 },
                 options: {
-                    /* maintainAspectRatio: false, */
+                    maintainAspectRatio: false,
                     tree: {
                         orientation
                     },

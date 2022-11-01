@@ -26,21 +26,24 @@ class Chart extends Model {
 
 		if (isset($_GET['theme'])) $theme = $_GET['theme'];
 
+		$tree_info = $this->tree->get_info();
+		$nodes = $this->get_nodes();
+		$json = json_encode($nodes);
+
+		jprint($tree_info);
+
 		$id = 'oxytocin-graph-' . $this->index;
+		$height = 160 + $tree_info->width * 140;
 
 		echo "<script src='https://unpkg.com/chart.js@3'></script>";
 		echo "<script src='https://unpkg.com/chartjs-chart-graph@3'></script>";
 		echo "<script src='https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2'></script>";
 
-		echo "<div class='oxytocin-graph-wrap loading'>";
+		echo "<div class='oxytocin-graph-wrap loading' style='height: {$height}px'>";
 			echo "<div class='oxytocin-graph-title'>Template Map <sup>1.0</sup></div>";
 			echo "<div class='chart-loader'></div>";
 			echo "<canvas class='oxytocin-graph' id='{$id}' data-index='{$this->index}'></canvas>";
 		echo "</div>";
-
-		$nodes = $this->get_nodes();
-		$json = json_encode($nodes);
-		
 
 		echo "<script>new_chart({$json}, '{$this->index}', 'tree', 'horizontal', '{$theme}');</script>";
 		
@@ -64,7 +67,6 @@ class Chart extends Model {
 		$current_id = get_the_ID();
 		$i = 0;
 
-		jprint($this->tree->get_info());
 		jprint($this->tree->get_flat_tree());
 
 		if ($this->tree->get_flat_tree()) foreach ($this->tree->get_flat_tree() as $post_id => $post) {
