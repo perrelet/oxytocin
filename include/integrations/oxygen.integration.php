@@ -329,50 +329,23 @@ class Oxygen extends \Digitalis\Integration {
 		if (!oxygen_vsb_current_user_can_full_access()) return;
 
 		$screen = get_current_screen();
-		if (get_option('oxygen_vsb_ignore_post_type_'.$screen->post_type, false) == "true") return;
+		if (get_option('oxygen_vsb_ignore_post_type_' . $screen->post_type, false) == "true") return;
 
 		$post_types 	= get_post_types('', 'objects'); 
 		$exclude_types 	= ["nav_menu_item", "revision"];
 
 		foreach ($post_types as $post_type) {
 
+			if (!$post_type->public) continue;
 			if (in_array($post_type->name, $exclude_types)) continue;
-
-			global $wp_version;
-			$num_version = 9999;
-
-			if (is_numeric($wp_version)) {
-
-				$num_version = floatval($wp_version);
-
-			} else {
-
-				if(strpos($wp_version, '-')) {
-					
-					$exploded = explode('-', $wp_version);
-					$num_version = $exploded[0];
-					
-				} else {
-					$num_version = $wp_version;
-				}
-
-				$exploded = explode('.', $num_version);
-
-				if (is_numeric($exploded[0])) {
-					$num_version = floatval($exploded[0] . (isset($exploded[1]) ? '.' . $exploded[1] : ''));
-				} else {
-					$num_version = 9999;
-				}
-
-			}
 
 			add_meta_box(
 				'oxytocin_dependencies',
 				__('Oxytocin', 'digitalis'),
 				[$this, 'render_dependency_meta_box'],
 				$post_type->name,
-				($num_version >= 5 ? 'normal' : 'advanced'),
-				'high'
+				'advanced',
+				'default'
 			);
 
 		}
