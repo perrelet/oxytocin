@@ -237,7 +237,7 @@ class Genealogist extends Utility {
 				
 				//$reusable[] = $element;
 				$part = get_post($element['options']['view_id']);
-				$part->nicename = $element['options']['nicename'];
+				$part->nicename = isset($element['options']['nicename']) ? $element['options']['nicename'] : $element['options']['selector'];
 				$part->type = 'reusable';
 				$part->inner = false;
 				$reusable[] = $part;
@@ -246,12 +246,14 @@ class Genealogist extends Utility {
 			
 			if ($find_sections && ($element['name'] == 'ct_section')) {
 
+				$name = isset($element['options']['nicename']) ? $element['options']['nicename'] : $element['options']['selector'];
+
 				//$part = new \WP_Post((new \stdClass())->post_title = 'test');
 				$section = new \stdClass();
 				$section->ID = $post->ID . "-" . $element['id'];
-				$section->post_title = $element['options']['nicename'];
+				$section->post_title = $name;
 				$section = new \WP_Post($section);
-				$section->nicename = $element['options']['nicename'];
+				$section->nicename = $name;
 				$section->type = 'section';
 				$section->inner = false;
 				if (isset($element['children'])) $section->children = self::find_reusable_parts($element, $post, $find_sections, []);
