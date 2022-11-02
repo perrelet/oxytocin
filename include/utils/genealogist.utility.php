@@ -23,9 +23,6 @@ class Genealogist extends Utility {
 
 		if ($inheritance) {
 			
-			//$inheritance[0]->children = [$post];
-			//$inheritance[0]->children[0]->children = self::get_reusable_parts($post_id);
-
 			self::add_children($inheritance[0], [$post]);
 			$last_child_index = count($inheritance[0]->children) - 1;
 			self::add_children($inheritance[0]->children[$last_child_index], self::get_reusable_parts($post));
@@ -168,7 +165,7 @@ class Genealogist extends Utility {
 
 	}
 
-	public static function get_inheritance ($post_id, $parts = false) {
+	public static function get_inheritance ($post_id, $find_parts = false) {
 
 		if (get_post_type($post_id) == 'ct_template') {
 
@@ -178,22 +175,22 @@ class Genealogist extends Utility {
 		} else {
 
 			if (!$template = self::get_template($post_id)) return [];
-			if ($parts) self::add_children($template, self::get_reusable_parts($template, true));
+			//if ($find_parts) self::add_children($template, self::get_reusable_parts($template));
 
 			$template_id = $template->ID;
 			$inheritance = [$template];
 
 		}
 		
-		return self::get_template_inheritance($template_id, $parts, $inheritance);
+		return self::get_template_inheritance($template_id, $inheritance, $find_parts);
 
 	}
 
-    public static function get_template_inheritance ($template_id, $parts = false, $inheritance = []) {
+    public static function get_template_inheritance ($template_id, $inheritance = [], $find_parts = false) {
 		
 		$parent = self::get_parent_template($template_id);
 
-		if ($parent && $parts) self::add_children($parent, self::get_reusable_parts($parent, true));
+		if ($parent && $find_parts) self::add_children($parent, self::get_reusable_parts($parent));
 
 		if (is_null($parent)) {
 
@@ -202,7 +199,7 @@ class Genealogist extends Utility {
 		} else {
 
 			$inheritance[] = $parent;
-			$inheritance = self::get_template_inheritance($parent->ID, $parts, $inheritance);
+			$inheritance = self::get_template_inheritance($parent->ID, $inheritance, $find_parts);
 
 		}
 		
@@ -210,20 +207,15 @@ class Genealogist extends Utility {
 		
 	}
 
-    public static function get_reusable_parts ($post, $recursive = true, $find_sections = true) {
+    public static function get_reusable_parts ($post, $find_sections = true) {
 
+		//jprint($post->post_title);
+
+		if ($post->type == 'section') return [];
 		if (!$json = get_post_meta($post->ID, 'ct_builder_json', true)) return [];
 
 		$tree = json_decode($json, true);
-		$parts = self::find_reusable_parts($tree, $post, $find_sections);
-
-		if ($recursive && $parts) foreach ($parts as $part) {
-
-			self::add_children($part, self::get_reusable_parts($part, true, $find_sections));
-
-		}
-
-		return $parts;
+		return self::find_reusable_parts($tree, $post, $find_sections);
 
 	}
 
@@ -234,26 +226,33 @@ class Genealogist extends Utility {
 		foreach ($elements['children'] as $element) {
 
 			if ($element['name'] == 'ct_reusable') {
-				
+
 				//$reusable[] = $element;
 				$part = get_post($element['options']['view_id']);
 				$part->nicename = isset($element['options']['nicename']) ? $element['options']['nicename'] : $element['options']['selector'];
 				$part->type = 'reusable';
 				$part->inner = false;
+
+				//jprint(". " . $part->post_title);
+
+				self::add_children($part, self::get_reusable_parts($part, $find_sections));
+
+				//if ($part->post_title == 'Gallery') jprint($part);
+
 				$reusable[] = $part;
 
 			}
 			
 			if ($find_sections && ($element['name'] == 'ct_section')) {
 
-				$name = isset($element['options']['nicename']) ? $element['options']['nicename'] : $element['options']['selector'];
+				$nicename = isset($element['options']['nicename']) ? $element['options']['nicename'] : $element['options']['selector'];
 
 				//$part = new \WP_Post((new \stdClass())->post_title = 'test');
 				$section = new \stdClass();
 				$section->ID = $post->ID . "-" . $element['id'];
-				$section->post_title = $name;
+				$section->post_title = $nicename;
 				$section = new \WP_Post($section);
-				$section->nicename = $name;
+				$section->nicename = $nicename;
 				$section->type = 'section';
 				$section->inner = false;
 				if (isset($element['children'])) $section->children = self::find_reusable_parts($element, $post, $find_sections, []);

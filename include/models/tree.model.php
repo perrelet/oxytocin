@@ -82,10 +82,19 @@ class Tree extends Model {
                 $post->parent_id = property_exists($tree, 'ID') ? $tree->ID : null;
                 if ($parent_node >= 0) $post->parent_node = $parent_node;
                 
-                $flat_tree[$post->ID] = $post;
-                $flat_tree = $this->flatten($post, $flat_tree);
+                $id = $post->ID;
+                $n = 1;
+                while (isset($flat_tree[$id])) {
 
-                $flat_tree[$post->ID]->children = null;
+                    $id = $post->ID . "#" . $n;
+                    $n++;
+
+                }
+
+                $flat_tree[$id] = $post;
+                $flat_tree = $this->flatten($post, $flat_tree);                
+
+                $flat_tree[$id]->children = null;
 
             }
 

@@ -130,7 +130,7 @@ class Oxygen extends \Digitalis\Integration {
 
 		}
 
-		if ($reusable = Genealogist::get_reusable_parts($post, true, false)) {
+		if ($reusable = Genealogist::get_reusable_parts($post, false)) {
 
 			$wp_admin_bar->add_menu( [
 				'id' => 'oxytocin_reusable_parts',
@@ -371,8 +371,6 @@ class Oxygen extends \Digitalis\Integration {
 		//$reusable = Genealogist::get_reusable_parts($post_clone->ID);
 		
 		//echo "<script>new_chart(nodes, 'oxytocin-graph', 'dendogram', 'horizontal');</script>";
-
-
 		
 		//dprint($tree);
 
