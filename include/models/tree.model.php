@@ -14,6 +14,7 @@ class Tree extends Model {
         $children = is_array($children) ? $children : [$children];
 
         $this->tree = new \stdClass();
+        $this->tree->ID = 'tree_root';
         $this->tree->children = $children;
 
     }

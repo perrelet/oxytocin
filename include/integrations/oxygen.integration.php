@@ -174,9 +174,7 @@ class Oxygen extends \Digitalis\Integration {
 
 	}
 
-	public function admin_menu_tree ($tree, $parent_id = 'oxytocin_tree', $depth = 1, $indent = "") {
-
-		global $wp_admin_bar;
+	public function admin_menu_tree ($tree, $parent_menu_id = 'oxytocin_tree', $depth = 1, $indent = "") {
 
 		if (property_exists($tree, 'children') && $tree->children) foreach ($tree->children as $i => $post) {
 
@@ -194,46 +192,47 @@ class Oxygen extends \Digitalis\Integration {
 
 			}
 
-			if ($post->type != 'section') {
+			if ($post->type == 'section') {
+
+				$this->admin_menu_tree($post, $parent_menu_id, $depth, $indent);
+
+			} else {
 
 				$this->admin_menu_oxygen_link(
-					"{$parent_id}_{$depth}_$i",
-					$parent_id,
+					"{$tree->ID}_{$post->ID}_$i",
+					$parent_menu_id,
 					$post,
 					"{$indent}{$symbol} {$depth}. {$post->post_title} ({$type})"
 				);
 
-				$depth++;
-				$indent .= self::INDENT;
+				$this->admin_menu_tree($post, $parent_menu_id, $depth + 1, $indent . self::INDENT);
 
 			}
-
-			$this->admin_menu_tree($post, $parent_id, $depth, $indent);
 
 		}
 
 	}
 
-	public function admin_menu_oxygen_link ($id, $parent_id, $post, $title = null) {
+	public function admin_menu_oxygen_link ($id, $parent_menu_id, $post, $title = null) {
 
 		global $wp_admin_bar;
 
 		if (is_null($title)) $title = $post->post_title;
 
 		$wp_admin_bar->add_menu( [
-			'id' => $id,
-			'parent' => $parent_id,
-			'title' =>  $title,
-			'href' => get_edit_post_link($post->ID, 'raw'),
+			'id'		=> $id,
+			'parent'	=> $parent_menu_id,
+			'title'		=> $title,
+			'href'		=> get_edit_post_link($post->ID, 'raw'),
 		]);
 
 		if ($url = Genealogist::get_builder_url($post)) {
 
 			$wp_admin_bar->add_menu( [
-				'id' => $id . "_oxy",
-				'parent' => $id,
-				'title' =>  "Edit with Oxygen",
-				'href' => $url,
+				'id'		=> $id . "_oxy",
+				'parent'	=> $id,
+				'title'		=>  "Edit with Oxygen",
+				'href'		=> $url,
 			]);
 
 		}
