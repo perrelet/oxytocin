@@ -231,7 +231,7 @@ class Oxygen extends \Digitalis\Integration {
 			$wp_admin_bar->add_menu( [
 				'id'		=> $id . "_oxy",
 				'parent'	=> $id,
-				'title'		=>  "Edit with Oxygen",
+				'title'		=> "Edit with Oxygen",
 				'href'		=> $url,
 			]);
 

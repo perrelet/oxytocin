@@ -175,7 +175,7 @@ class Genealogist extends Utility {
 		} else {
 
 			if (!$template = self::get_template($post_id)) return [];
-			//if ($find_parts) self::add_children($template, self::get_reusable_parts($template));
+			if ($find_parts) self::add_children($template, self::get_reusable_parts($template));
 
 			$template_id = $template->ID;
 			$inheritance = [$template];
