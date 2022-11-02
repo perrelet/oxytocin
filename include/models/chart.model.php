@@ -48,16 +48,7 @@ class Chart extends Model {
 
 		echo "<script>new_chart({$json}, '{$this->index}', 'tree', 'horizontal', '{$theme}');</script>";
 		
-		if ($this->index == 0) {
-
-			echo "<script>let chart_data = [{$json}];</script>";
-			$this->context_menu();
-
-		} else {
-
-			echo "<script>chart_data.push({$json});</script>";
-
-		}
+		if ($this->index == 0) $this->context_menu();
 
 	}
 

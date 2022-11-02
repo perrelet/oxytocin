@@ -1,12 +1,8 @@
-
-/* // Change default options for ALL charts
-Chart.defaults.set('plugins.datalabels', {
-    color: '#FE777B'
-  });
- */
-  
+let chart_data = [];
 
 function new_chart (nodes, index, type, orientation, theme) {
+
+    chart_data.push(nodes);
 
     var themes = {
         light: {
@@ -131,8 +127,8 @@ function new_chart (nodes, index, type, orientation, theme) {
                     },
                     layout: {
                         padding: {
-                            top: 0,
-                            bottom: 0,
+                            top: (orientation == 'horizontal') ? 0 : 100,
+                            bottom: (orientation == 'horizontal') ? 0 : 100,
                             left: 100,
                             right: 100,
                         }
