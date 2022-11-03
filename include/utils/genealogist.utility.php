@@ -137,7 +137,7 @@ class Genealogist extends Utility {
 
 	}
 
-	public static function find_inner_content ($post, $parent, $elements) {
+	public static function find_inner_content ($post, $parent, $elements, $section_id = false) {
 
 		if (!$elements || !isset($elements['children'])) return;
 
@@ -145,21 +145,30 @@ class Genealogist extends Utility {
 
 			switch ($element['name']) {
 
-				//case 'ct_reusable':
+				/* //case 'ct_reusable':
 				case 'ct_section':
-
-					$post->section_id = $element['id'];
-					break;
+					$current_section_id = $element['id'];
+					break; */
 
 				case 'ct_inner_content':
 
-					$post->inner_location = $post->section_id ? ($parent->ID . "-" . $post->section_id) : $parent->ID;
+					$post->inner_location = $section_id ? ($parent->ID . "-" . $section_id) : $parent->ID;
 					$post->inner = true;
 					return;
 
 			}
 
-			if (isset($element['children'])) self::find_inner_content($post, $parent, $element);
+			if ($element['name'] == 'ct_section') {
+
+				if (isset($element['children'])) self::find_inner_content($post, $parent, $element, $element['id']);
+
+			} else {
+
+				if (isset($element['children'])) self::find_inner_content($post, $parent, $element, $section_id);
+				
+			}
+
+			
 
 		}
 
