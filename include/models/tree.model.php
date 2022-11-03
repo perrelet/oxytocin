@@ -76,8 +76,9 @@ class Tree extends Model {
 
 		if (property_exists($tree, 'children') && $tree->children) {
             
-
-            foreach ($tree->children as $i => $post) {
+            for ($i = count($tree->children) - 1; $i >= 0; $i--) {
+                $post = $tree->children[$i];
+            //foreach ($tree->children as $i => $post) {
 
                 $post->structure = 'flat';
                 $post->parent_id = property_exists($tree, 'ID') ? $tree->ID : null;
