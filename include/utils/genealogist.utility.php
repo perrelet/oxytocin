@@ -23,9 +23,12 @@ class Genealogist extends Utility {
 
 		if ($inheritance) {
 			
-			self::add_children($inheritance[0], [$post]);
+			/* self::add_children($inheritance[0], [$post]);
 			$last_child_index = count($inheritance[0]->children) - 1;
-			self::add_children($inheritance[0]->children[$last_child_index], self::get_reusable_parts($post));
+			self::add_children($inheritance[0]->children[$last_child_index], self::get_reusable_parts($post)); */
+
+			$inheritance = array_merge([$post], $inheritance);
+			self::add_children($inheritance[0], self::get_reusable_parts($post));
 
 		} else {
 
