@@ -23,20 +23,15 @@ class Genealogist extends Utility {
 
 		if ($inheritance) {
 			
-			/* self::add_children($inheritance[0], [$post]);
-			$last_child_index = count($inheritance[0]->children) - 1;
-			self::add_children($inheritance[0]->children[$last_child_index], self::get_reusable_parts($post)); */
-
 			$inheritance = array_merge([$post], $inheritance);
-			self::add_children($inheritance[0], self::get_reusable_parts($post));
 
 		} else {
 
 			$inheritance = [$post];
 
-			self::add_children($inheritance[0], self::get_reusable_parts($post));
-
 		}
+
+		self::add_children($inheritance[0], self::get_reusable_parts($post));
 
 		$template = null;
 		$prev_template = null;
@@ -55,13 +50,11 @@ class Genealogist extends Utility {
 
 					foreach ($template->children as $child) {
 
-						if ($child->ID == $prev_template->inner_location) {
+						if ($child->ID != $prev_template->inner_location) continue;
 
-							//jprint("Adding " . $prev_template->post_title . " as a child of {$child->post_title}");
-							self::add_children($child, [$prev_template]);
-							break;
-
-						}
+						//jprint("Adding " . $prev_template->post_title . " as a child of {$child->post_title}");
+						self::add_children($child, [$prev_template]);
+						break;
 
 					} 
 
