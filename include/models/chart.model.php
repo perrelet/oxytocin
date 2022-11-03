@@ -176,13 +176,13 @@ class Chart extends Model {
 			'colors' => [
 				'bg'	=> '#04000f',
 				'edge'	=> '#443961',
-				'label'	=> '#fbf0ff'
-			],
-			'node'	=> [
-				'template'	=> '#25d1a0',
-				'reusable'	=> '#f9bb3e',
-				'section'	=> '#cd55fc',
-				'post'		=> '#cd55fc',
+				'label'	=> '#fbf0ff',
+				'node'	=> [
+					'template'	=> '#25d1a0',
+					'reusable'	=> '#f9bb3e',
+					'section'	=> '#cd55fc',
+					'post'		=> '#cd55fc',
+				],
 			],
 		],
 	];
