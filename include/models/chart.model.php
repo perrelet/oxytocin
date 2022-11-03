@@ -33,7 +33,7 @@ class Chart extends Model {
 		jprint($tree_info);
 
 		$id = 'oxytocin-graph-' . $this->index;
-		$height = 160 + $tree_info->width * 140;
+		$height = 160 + $tree_info->width * 100;
 		$width = 360 * $tree_info->depth;
 
 		echo "<script src='https://unpkg.com/chart.js@3'></script>";
