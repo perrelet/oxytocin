@@ -4,7 +4,7 @@ function new_chart (nodes, index, type, orientation, theme) {
 
     chart_data.push(nodes);
 
-    var themes = {
+    /* var themes = {
         light: {
             colors: {
                 edge: '#fff',
@@ -29,7 +29,7 @@ function new_chart (nodes, index, type, orientation, theme) {
                 }
             }
         },
-    }
+    } */
 
     let oxytocin_chart = {
 
@@ -61,7 +61,7 @@ function new_chart (nodes, index, type, orientation, theme) {
         ready: function () {
 
             this.el.wrap = this.chart.canvas.parentElement;
-            this.el.wrap.classList.add('theme-' + this.theme);
+            this.el.wrap.classList.add('theme-' + this.theme.name);
 
             this.el.context.menu = document.getElementById('chart-context-menu');
             this.el.context.edit = document.getElementById('chart-context-edit');
@@ -100,20 +100,20 @@ function new_chart (nodes, index, type, orientation, theme) {
                     /* labels: nodes.map((d) => d.info), */
                     datasets: [{
                         //pointBackgroundColor:       nodes.map((d) => d.color),
-                        pointBackgroundColor:       nodes.map((d) => themes[this.theme].colors.node[d.type]),
-                        edgeLineBorderColor:        themes[this.theme].colors.edge,
+                        pointBackgroundColor:       nodes.map((d) => this.theme.colors.node[d.type]),
+                        edgeLineBorderColor:        this.theme.colors.edge,
                         edgeLineBorderWidth:        10,
                         pointRadius:                nodes.map((d) => d.type == 'section' ? 12 : 20),
                         pointBorderWidth:           8,
-                        pointBorderColor:           themes[this.theme].colors.edge,
+                        pointBorderColor:           this.theme.colors.edge,
                         pointHoverRadius:           nodes.map((d) => d.type == 'section' ? 18 : 30),
                         pointHoverBorderWidth:      8,
-                        pointHoverBorderColor:      themes[this.theme].colors.edge,
+                        pointHoverBorderColor:      this.theme.colors.edge,
                         directed:                   true,
                         arrowHeadSize:              0,
                         arrowHeadOffset:            20,
                         datalabels: {
-                            color: nodes.map((d) => d.current ? d.color : themes[this.theme].colors.label)
+                            color: nodes.map((d) => d.current ? d.color : this.theme.colors.label)
                         },
                         clip: 100,
                         //pointStyle: img,

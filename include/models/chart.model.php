@@ -10,6 +10,8 @@ class Chart extends Model {
 	protected $tree;
 	protected $nodes;
 
+	public static $node_types = ['template', 'reusable', 'post', 'section'];
+
 	public function __construct ($tree) {
 
         $this->index = static::$count;
@@ -25,6 +27,9 @@ class Chart extends Model {
 	public function render ($theme = 'light') {
 
 		if (isset($_GET['theme'])) $theme = $_GET['theme'];
+
+		$theme = self::theme($theme);
+		$json_theme = json_encode($theme);
 
 		$tree_info = $this->tree->get_info();
 		$nodes = $this->get_nodes();
@@ -46,9 +51,12 @@ class Chart extends Model {
 			echo "<canvas class='oxytocin-graph' id='{$id}' data-index='{$this->index}' style='max-width: {$width}px;'></canvas>";
 		echo "</div>";
 
-		echo "<script>new_chart({$json}, '{$this->index}', 'tree', 'horizontal', '{$theme}');</script>";
+		echo "<script>new_chart({$json}, '{$this->index}', 'tree', 'horizontal', {$json_theme});</script>";
 		
-		if ($this->index == 0) $this->context_menu();
+		if ($this->index == 0) {
+			echo "<style>" . $this->generate_css($theme) . "</style>";
+			$this->context_menu();
+		}
 
 	}
 
@@ -65,6 +73,7 @@ class Chart extends Model {
 
 			$node = [
 				'name' 			=> $post->post_title,
+				'type'			=> $post->type,
 				'tree_index' 	=> $i,
 				'current' 		=> $post->ID === $current_id,
 				'url'			=> ($post->ID === $current_id) ? null : get_edit_post_link($post->ID, 'raw'),
@@ -76,21 +85,18 @@ class Chart extends Model {
 
 				case 'template':
 					//$node['color']	= '#25d1a0';//'rgb(25,184,120)';//"#7bc667";//'#4bc0c1';//'rgb(25,184,120)';
-					$node['type']		= 'template';
 					$node['post_type']	= 'Template';
 					$node['open_label']	= 'Open Template';
 					break;
 
 				case 'reusable':
 					//$node['color']	= '#f9bb3e';//'rgb(238,122,72)';//"#ffa600";//'#ffcd56';//'rgb(238,122,72)';
-					$node['type']		= 'part';
 					$node['post_type']	= 'Part';
 					$node['open_label']	= 'Open Reusable Part';
 					break;
 
 				case 'section':
 					//$node['color']	= '#cd55fc';//'rgb(238,122,72)';//"#ffa600";//'#ffcd56';//'rgb(238,122,72)';
-					$node['type']		= 'section';
 					$node['post_type']	= 'Section';
 					$node['open_label']	= 'Open Parent';
 					break;
@@ -98,7 +104,6 @@ class Chart extends Model {
 				default:
 					//$node['color']	= '#cd55fc';//'rgb(59,98,161)';//"#4bc0c1";//'#3aa8e3';//'rgb(59,98,161)';
 					$post_type			= get_post_type_object($post->post_type);
-					$node['type']		= 'post';
 					$node['post_type']	= $post_type->labels->singular_name;
 					$node['open_label']	= 'Open ' . $post_type->labels->singular_name;
 
@@ -131,6 +136,83 @@ class Chart extends Model {
 			echo "</div>";
 		echo "</nav>";
 
+	}
+
+	protected function generate_css ($theme) {
+
+		$css = [
+			'.oxytocin-graph-wrap' => [
+				'background-color' => $theme['colors']['bg'],
+			]
+		];
+
+		foreach (self::$node_types as $node_type) {
+
+			$css["#chart-context-menu.{$node_type} a:hover"] = [
+				'background-color' => $theme['colors']['node'][$node_type],
+			];
+
+		}
+
+		return self::css($css);
+
+	}
+
+	protected static $themes = [
+		'light' => [
+			'colors' => [
+				'bg'	=> '#fff',
+				'edge'	=> '#fff',
+				'label'	=> '#999',
+				'node'	=> [
+					'template'	=> '#25d1a0',
+					'reusable'	=> '#f9bb3e',
+					'section'	=> '#cd55fc',
+					'post'		=> '#cd55fc',
+				],
+			],
+		],
+		'dark' => [
+			'colors' => [
+				'bg'	=> '#04000f',
+				'edge'	=> '#443961',
+				'label'	=> '#fbf0ff'
+			],
+			'node'	=> [
+				'template'	=> '#25d1a0',
+				'reusable'	=> '#f9bb3e',
+				'section'	=> '#cd55fc',
+				'post'		=> '#cd55fc',
+			],
+		],
+	];
+	protected static $theme = null;
+
+	protected static function theme ($theme = 'light') {
+
+		if (is_null(self::$theme)) {
+			self::$theme = isset(self::$themes[$theme]) ?  self::$themes[$theme] : self::$themes['light'];
+			self::$theme['name'] = $theme;
+		}
+
+		return self::$theme;
+
+	}
+
+	public static function css ($data) {
+		
+		$css = "";
+		
+		foreach ($data as $selector => $props) {
+
+			$css .= $selector . " {" ;
+			foreach ($props as $property => $value) $css .= "{$property}: {$value};";
+			$css .= "}" ;
+
+		}
+		
+		return $css;
+		
 	}
 
 }
