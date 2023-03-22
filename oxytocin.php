@@ -4,7 +4,7 @@
  * Plugin Name:       Oxytocin
  * Plugin URI:        https://digitalis.ca
  * Description:       Oxygen, but better.
- * Version:           0.0.0
+ * Version:           0.0.1
  * Author:            Digitalis Web Build Co.
  * Author URI:        https://digitalis.ca
  * Text Domain:       digitalis
@@ -12,7 +12,7 @@
 
 if (!defined('WPINC')) die;
 
-define('OXYTOCIN_VERSION', 		'0.0.0' );
+define('OXYTOCIN_VERSION', 		'0.0.1' );
 define('OXYTOCIN_PATH', 		plugin_dir_path(__FILE__ )); //Trailing slash = /
 define('OXYTOCIN_URI',			plugin_dir_url(__FILE__ ));
 define('OXYTOCIN_BASE',			plugin_basename(__FILE__));
